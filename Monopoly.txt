@@ -1,0 +1,20 @@
+Logik:
+Startscreen[Ascii-Art Monopolymann oder so]:
+Spielinfos anzeigen
+maybe import
+Wie viele Spieler + eingabe Spielernamen
+Auswahl der Spielfiguren [Emojis oder einfache Symbole]
+-> Spielbrett initialisiert und alle Spiler starten auf Feld 0 mit Startguthaben
+-> ein Spieler fängt an durch SpielerID wird die Reihenfolge zufällig bestimmt
+
+Spielbrettsicht [statische Aufbau mit wechsel zu Monopolymann in der Mitte wenn eine Karte vorgelesen wird]:
+-> automatisches Würfeln
+->Aktion wählen die freigeschaltet werden (Frei kaufen(im Gefängnis), Hypotheke(Wenn min. 1 Karte im besitz), Upgraden(alle Straßen einer Farbe),Handeln(nach erster Würfel Runde), Vote für Gameend und maybe export)
+->Aktionen ausführen und den Zug beenden durch eine Aktion
+-> Kauf von nicht besetzen Karten
+-> Geld bezahlen wenn Karte besetzt: möglichkeiten für Hypothek und Bankrott(ganzer Besitzt geht an den Kartenbesitzer)
+-> sonder Felder:
+	Frei Parken, Komme ins Gefäängnis, Gefängnis, Karten zieh plätze(Community and Chance), Stuerfelder(1 Hälfte Runden einkommen andere ganze Rundeneinkommen), Überlos = Rundeneinkommen, Auflos = doppeltes Rundeneinkommen
+
+
+
