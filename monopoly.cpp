@@ -391,7 +391,27 @@ void displayGameBoard(tile* gameBoard){
 40 % 40 = 0 -> Reset
 10 -> Jail or no jail 
 
-
+🎉 Fun / Decorative Markers
+Symbol	Name	Unicode Code
+🤠	Cowboy Hat Face	U+1F920
+🧸	Teddy Bear	U+1F9F8
+🤖	Robot Face	U+1F916
+🐎	Horse	U+1F40E
+🎩 Objects Often Used as Monopoly Tokens
+Symbol	Name	Unicode Code
+🚗	Automobile	U+1F697
+🎩	Top Hat	U+1F3A9
+🐕	Dog	U+1F415
+🐈	Cat	U+1F408
+🚢	Ship	U+1F6A2
+🪙	Coin	U+1FA99
+🧳	Luggage	U+1F9F3
+🔑	Key	U+1F511
+🧍 People / Player Figures
+Symbol	Name	Unicode Code
+🧍	Person Standing	U+1F9CD
+🧑	Person	U+1F9D1
+👤	Bust in Silhouette	U+1F464
 
 */
 
