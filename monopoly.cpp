@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,37 @@ void clearInputBuffer() {
 void clearTerminal() {
     fputs("\x1b[1;1H\x1b[2J\x1b[3J", stdout);
     fflush(stdout);
+}
+
+int rollDice(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1,6);
+    
+    return dis(gen);
+}
+
+bool checkPasch(int x, int y){
+    if(x != y){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+void movePlayer(int x, int y, player &p){
+    int s = x+y;
+    int temp = p.currentPosition+s; 
+    if(temp < 40){
+        p.currentPosition = temp;
+    }else {
+        p.currentPosition = temp - 40;
+    }
+}
+
+void arrest(player &p){
+    p.jailed = true;
+    p.currentPosition = 10;
 }
 
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
@@ -414,6 +446,56 @@ Symbol	Name	Unicode Code
 👤	Bust in Silhouette	U+1F464
 
 */
+//Main function for the GameLoop, with a selection for the possible actions in Monopoly
+bool action(int &sel, player &p, int &count, bool &ok){
+    std::cout<<"What to do? \n"
+    <<"1 = Roll the dices \n"
+    <<"2 = Hypothesize cards \n"
+    <<"3 = Build houses \n"
+    <<"4 = Trade with player \n"
+    <<"0 = End your turn \n"
+    <<"10 = Quit the whole game early"
+    <<std::endl;
+    std::cin>>sel;
+    switch (sel) {
+        default:{
+            sel = -1;
+            return false;
+        }case 0:{
+            return ok;
+        }case 1:{
+            count++;
+            int x = rollDice();
+            int y = rollDice();
+            if(count == 3 && checkPasch(x,y)){
+                arrest(p);
+                sel = 0;
+                return true;
+            }
+            movePlayer(x,y,p);
+            #
+            if(!checkPasch(x, y)){
+                ok = true;
+            }else{
+                ok = false;
+            }
+            return false;
+        }case 2:{
+            #
+            return false;
+        }case 3:{
+            #
+            return false;
+        }case 4:{
+            #
+            return false;
+        }case 10:{
+            #
+            return true;
+        }
+
+    }
+}
 
 int main(){
     //tile *gameBoard = new tile[40];
@@ -540,8 +622,23 @@ int main(){
         // 39 Boardwalk
         {false,true,400,200,200,0, 50,200,600,1400,1700,2000, DARK_BLUE, "Boardwalk","BOARD W"}
     };
-
+    //List of players
+    std::vector<player> players;
 
     //displayGameBoard(gameBoard);
+
+    //start of Gameloop :)
+    int sel;
+    do{
+        for(player &currentPlayer : players){
+            bool control = false;
+            bool rolled = false;
+            int count = 0;
+            do{
+                control = action(sel,currentPlayer,count,rolled);
+            }while(sel && control || sel != 10);
+        }
+    }while(sel != 10);
+
     return 0;
 }
