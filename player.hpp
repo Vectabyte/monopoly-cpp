@@ -2,12 +2,6 @@
 #include <string>
 #include <vector>
 
-enum ColorGroup {
-    NONE,
-    BROWN, LIGHT_BLUE, PINK, ORANGE,
-    RED, YELLOW, GREEN, DARK_BLUE,
-};
-
 typedef struct player{
         std::string name;
         bool jailed;
@@ -15,5 +9,6 @@ typedef struct player{
         int currentPosition;
         int playerId;
         std::vector<int> ownedStreets;
+        std::string symbol;
         ColorGroup color;
     } player;

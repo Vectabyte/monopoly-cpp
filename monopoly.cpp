@@ -3,6 +3,93 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <array>
+#include <algorithm>
+
+// Color groups for properties
+enum ColorGroup {
+    NONE,
+
+    // Standard colors - disabled due to similarity in terminal
+    /*
+    BLACK,
+    RED,
+    GREEN,
+    YELLOW,
+    BLUE,
+    MAGENTA,
+    CYAN,
+    WHITE,
+    */
+
+    // Bright colors
+    BRIGHT_BLACK,
+    BRIGHT_RED,
+    BRIGHT_GREEN,
+    BRIGHT_YELLOW,
+    BRIGHT_BLUE,
+    BRIGHT_MAGENTA,
+    BRIGHT_CYAN,
+    BRIGHT_WHITE,
+};
+
+// Symbols for players
+const std::vector<std::string> availableSmybols = {
+        "♠","♣","♥","♦","●","○","■","□",
+        "▲","▼","◆","◇","★","☆","✪","✦","✧","✚","✖",
+        "⚀","⚁","⚂","⚃","⚄","⚅",
+        "♜","♞","♝","♛","♚"
+};
+
+// Map display names to fully expanded ColorGroup
+const std::vector<std::pair<std::string, ColorGroup>> availableColors = {
+    // Standard variants - disabled due to similarity in terminal
+    /*
+    {"Black",        BLACK},
+    {"Red",          RED},
+    {"Green",        GREEN},
+    {"Yellow",       YELLOW},
+    {"Blue",         BLUE},
+    {"Magenta",      MAGENTA},
+    {"Cyan",         CYAN},
+    {"White",        WHITE},
+    */
+
+    // Bright variants
+    {"Bright Black", BRIGHT_BLACK},
+    {"Bright Red",   BRIGHT_RED},
+    {"Bright Green", BRIGHT_GREEN},
+    {"Bright Yellow",BRIGHT_YELLOW},
+    {"Bright Blue",  BRIGHT_BLUE},
+    {"Bright Magenta",BRIGHT_MAGENTA},
+    {"Bright Cyan",  BRIGHT_CYAN},
+    {"Bright White", BRIGHT_WHITE}
+};
+
+// ANSI escape codes for each color
+const std::vector<std::string> colorCodes = {
+    "\033[30m", // Black
+    "\033[31m", // Red
+    "\033[32m", // Green
+    "\033[33m", // Yellow
+    "\033[34m", // Blue
+    "\033[35m", // Magenta
+    "\033[36m", // Cyan
+    "\033[37m", // White
+
+    // Bright colors
+    "\033[90m", // Bright Black
+    "\033[91m", // Bright Red
+    "\033[92m", // Bright Green
+    "\033[93m", // Bright Yellow
+    "\033[94m", // Bright Blue
+    "\033[95m", // Bright Magenta
+    "\033[96m", // Bright Cyan
+    "\033[97m"  // Bright White
+};
+
+
+const std::string RESET_COLOR = "\033[0m";
 
 #include "player.hpp"
 #include "tile.hpp"
@@ -96,230 +183,260 @@ int calculatePropertyRent(const tile& t, bool monopoly)
 }
 
 
-void initizialeGameBoard(tile* gameBoard) {
-    /*
-    gameBoard[0].tileName = "GO";
-    gameBoard[0].shortName = "GO";
-    gameBoard[0].buyable = false;
+std::vector<tile> initizialeGameBoard() {
+    // Initialize Gameboard with all tiles
+    std::vector<tile> tiles = {
 
-    gameBoard[1].tileName = "Mediterranean Ave";
-    gameBoard[1].shortName = "MED AVE";
-    gameBoard[1].buyable = true;
+        // 0 GO
+        {0,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "GO","GO"},
 
-    gameBoard[2].tileName = "Community Chest";
-    gameBoard[2].shortName = "CC";
-    gameBoard[2].buyable = false;
+        // 1 Mediterranean Ave
+        {1,false,true,60,30,50,0,2,10,30,90,160,250, BRIGHT_BLACK, "Mediterranean Ave","MED AVE"},
 
-    gameBoard[3].tileName = "Baltic Ave";
-    gameBoard[3].shortName = "BALTIC";
-    gameBoard[3].buyable = true;
+        // 2 Community Chest
+        {2,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Community Chest","CC"},
 
-    gameBoard[4].tileName = "Income Tax";
-    gameBoard[4].shortName = "INCOME";
-    gameBoard[4].buyable = false;
+        // 3 Baltic Ave
+        {3,false,true,60,30,50,0,4,20,60,180,320,450, BRIGHT_BLACK, "Baltic Ave","BALTIC"},
 
-    gameBoard[5].tileName = "Reading Railroad";
-    gameBoard[5].shortName = "READ RR";
-    gameBoard[5].buyable = true;
+        // 4 Income Tax
+        {4,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Income Tax","INCOME"},
 
-    gameBoard[6].tileName = "Oriental Ave";
-    gameBoard[6].shortName = "ORIENT";
-    gameBoard[6].buyable = true;
+        // 5 Reading Railroad
+        {5,false,true,200,100,0,0,25,50,100,200,0,0, BRIGHT_RED, "Reading Railroad","READ RR"},
 
-    gameBoard[7].tileName = "Chance";
-    gameBoard[7].shortName = "CHANCE";
-    gameBoard[7].buyable = false;
+        // 6 Oriental Ave
+        {6,false,true,100,50,50,0,6,30,90,270,400,550, BRIGHT_CYAN, "Oriental Ave","ORIENT"},
 
-    gameBoard[8].tileName = "Vermont Ave";
-    gameBoard[8].shortName = "VERMONT";
-    gameBoard[8].buyable = true;
+        // 7 Chance
+        {7,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Chance","CHANCE"},
 
-    gameBoard[9].tileName = "Connecticut Ave";
-    gameBoard[9].shortName = "CONNET";
-    gameBoard[9].buyable = true;
+        // 8 Vermont Ave
+        {8,false,true,100,50,50,0,6,30,90,270,400,550, BRIGHT_CYAN, "Vermont Ave","VERMONT"},
 
-    gameBoard[10].tileName = "Jail";
-    gameBoard[10].shortName = "JAIL";
-    gameBoard[10].buyable = false;
+        // 9 Connecticut Ave
+        {9,false,true,120,60,50,0,8,40,100,300,450,600, BRIGHT_CYAN, "Connecticut Ave","CONNET"},
 
-    gameBoard[11].tileName = "St. Charles Place";
-    gameBoard[11].shortName = "ST CHAR";
-    gameBoard[11].buyable = true;
+        // 10 Jail
+        {10,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Jail","JAIL"},
 
-    gameBoard[12].tileName = "Electric Company";
-    gameBoard[12].shortName = "ELECTRIC";
-    gameBoard[12].buyable = true;
+        // 11 St. Charles Place
+        {11,false,true,140,70,100,0,10,50,150,450,625,750, BRIGHT_MAGENTA, "St. Charles Place","ST CHAR"},
 
-    gameBoard[13].tileName = "States Ave";
-    gameBoard[13].shortName = "STATES";
-    gameBoard[13].buyable = true;
+        // 12 Electric Company
+        {12,false,true,150,75,0,0,0,0,0,0,0,0, BRIGHT_CYAN, "Electric Company","ELECTRIC"},
 
-    gameBoard[14].tileName = "Virginia Ave";
-    gameBoard[14].shortName = "VIRGINIA";
-    gameBoard[14].buyable = true;
+        // 13 States Ave
+        {13,false,true,140,70,100,0,10,50,150,450,625,750, BRIGHT_MAGENTA, "States Ave","STATES"},
 
-    gameBoard[15].tileName = "Pennsylvania Railroad";
-    gameBoard[15].shortName = "PA RR";
-    gameBoard[15].buyable = true;
+        // 14 Virginia Ave
+        {14,false,true,160,80,100,0,12,60,180,500,700,900, BRIGHT_MAGENTA, "Virginia Ave","VIRGINIA"},
 
-    gameBoard[16].tileName = "St. James Place";
-    gameBoard[16].shortName = "ST JAMES";
-    gameBoard[16].buyable = true;
+        // 15 Pennsylvania Railroad
+        {15,false,true,200,100,0,0,25,50,100,200,0,0, BRIGHT_RED, "Pennsylvania Railroad","PA RR"},
 
-    gameBoard[17].tileName = "Community Chest";
-    gameBoard[17].shortName = "CC";
-    gameBoard[17].buyable = false;
+        // 16 St. James Place
+        {16,false,true,180,90,100,0,14,70,200,550,750,950, BRIGHT_YELLOW, "St. James Place","STJAMES"},
 
-    gameBoard[18].tileName = "Tennessee Ave";
-    gameBoard[18].shortName = "TENNES";
-    gameBoard[18].buyable = true;
+        // 17 Community Chest
+        {17,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Community Chest","CC"},
 
-    gameBoard[19].tileName = "New York Ave";
-    gameBoard[19].shortName = "NEW YORK";
-    gameBoard[19].buyable = true;
+        // 18 Tennessee Ave
+        {18,false,true,180,90,100,0,14,70,200,550,750,950, BRIGHT_YELLOW, "Tennessee Ave","TENNES"},
 
-    gameBoard[20].tileName = "Free Parking";
-    gameBoard[20].shortName = "FP";
-    gameBoard[20].buyable = false;
+        // 19 New York Ave
+        {19,false,true,200,100,100,0,16,80,220,600,800,1000, BRIGHT_YELLOW, "New York Ave","NEWYORK"},
 
-    gameBoard[21].tileName = "Kentucky Ave";
-    gameBoard[21].shortName = "KENTUCKY";
-    gameBoard[21].buyable = true;
+        // 20 Free Parking
+        {20,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Free Parking","FP"},
 
-    gameBoard[22].tileName = "Chance";
-    gameBoard[22].shortName = "CHANCE";
-    gameBoard[22].buyable = false;
+        // 21 Kentucky Ave
+        {21,false,true,220,110,150,0,18,90,250,700,875,1050, BRIGHT_RED, "Kentucky Ave","KENTUCKY"},
 
-    gameBoard[23].tileName = "Indiana Ave";
-    gameBoard[23].shortName = "INDIANA";
-    gameBoard[23].buyable = true;
+        // 22 Chance
+        {22,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Chance","CHANCE"},
 
-    gameBoard[24].tileName = "Illinois Ave";
-    gameBoard[24].shortName = "ILLINOIS";
-    gameBoard[24].buyable = true;
+        // 23 Indiana Ave
+        {23,false,true,220,110,150,0,18,90,250,700,875,1050, BRIGHT_RED, "Indiana Ave","INDIANA"},
 
-    gameBoard[25].tileName = "B&O Railroad";
-    gameBoard[25].shortName = "B&O RR";
-    gameBoard[25].buyable = true;
+        // 24 Illinois Ave
+        {24,false,true,240,120,150,0,20,100,300,750,925,1100, BRIGHT_RED, "Illinois Ave","ILLINOIS"},
 
-    gameBoard[26].tileName = "Atlantic Ave";
-    gameBoard[26].shortName = "ATLANTIC";
-    gameBoard[26].buyable = true;
+        // 25 B&O Railroad
+        {25,false,true,200,100,0,0,25,50,100,200,0,0, BRIGHT_RED, "B&O Railroad","B&O RR"},
 
-    gameBoard[27].tileName = "Ventnor Ave";
-    gameBoard[27].shortName = "VENTNOR";
-    gameBoard[27].buyable = true;
+        // 26 Atlantic Ave
+        {26,false,true,260,130,150,0,22,110,330,800,975,1150, BRIGHT_YELLOW, "Atlantic Ave","ATLANTIC"},
 
-    gameBoard[28].tileName = "Water Works";
-    gameBoard[28].shortName = "WATER";
-    gameBoard[28].buyable = true;
+        // 27 Ventnor Ave
+        {27,false,true,260,130,150,0,22,110,330,800,975,1150, BRIGHT_YELLOW, "Ventnor Ave","VENTNOR"},
 
-    gameBoard[29].tileName = "Marvin Gardens";
-    gameBoard[29].shortName = "MARVIN";
-    gameBoard[29].buyable = true;
+        // 28 Water Works
+        {28,false,true,150,75,0,0,0,0,0,0,0,0, BRIGHT_CYAN, "Water Works","WATER"},
 
-    gameBoard[30].tileName = "Go To Jail";
-    gameBoard[30].shortName = "GOTOJAIL";
-    gameBoard[30].buyable = false;
+        // 29 Marvin Gardens
+        {29,false,true,280,140,150,0,24,120,360,850,1025,1200, BRIGHT_YELLOW, "Marvin Gardens","MARVIN"},
 
-    gameBoard[31].tileName = "Pacific Ave";
-    gameBoard[31].shortName = "PACIFIC";
-    gameBoard[31].buyable = true;
+        // 30 Go To Jail
+        {30,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Go To Jail","GOTOJAIL"},
 
-    gameBoard[32].tileName = "North Carolina Ave";
-    gameBoard[32].shortName = "N CAROL";
-    gameBoard[32].buyable = true;
+        // 31 Pacific Ave
+        {31,false,true,300,150,200,0,26,130,390,900,1100,1275, BRIGHT_GREEN, "Pacific Ave","PACIFIC"},
 
-    gameBoard[33].tileName = "Community Chest";
-    gameBoard[33].shortName = "CC";
-    gameBoard[33].buyable = false;
+        // 32 North Carolina Ave
+        {32,false,true,300,150,200,0,26,130,390,900,1100,1275, BRIGHT_GREEN, "North Carolina Ave","N CAROL"},
 
-    gameBoard[34].tileName = "Pennsylvania Ave";
-    gameBoard[34].shortName = "PENN AV";
-    gameBoard[34].buyable = true;
+        // 33 Community Chest
+        {33,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Community Chest","CC"},
 
-    gameBoard[35].tileName = "Short Line Railroad";
-    gameBoard[35].shortName = "SHORT RR";
-    gameBoard[35].buyable = true;
+        // 34 Pennsylvania Ave
+        {34,false,true,320,160,200,0,28,150,450,1000,1200,1400, BRIGHT_GREEN, "Pennsylvania Ave","PENN AV"},
 
-    gameBoard[36].tileName = "Chance";
-    gameBoard[36].shortName = "CHANCE";
-    gameBoard[36].buyable = false;
+        // 35 Short Line Railroad
+        {35,false,true,200,100,0,0,25,50,100,200,0,0, BRIGHT_RED, "Short Line Railroad","SHORT RR"},
 
-    gameBoard[37].tileName = "Park Place";
-    gameBoard[37].shortName = "PARK PLC";
-    gameBoard[37].buyable = true;
+        // 36 Chance
+        {36,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Chance","CHANCE"},
 
-    gameBoard[38].tileName = "Luxury Tax";
-    gameBoard[38].shortName = "LUXURY";
-    gameBoard[38].buyable = false;
+        // 37 Park Place
+        {37,false,true,350,175,200,0,35,175,500,1100,1300,1500, BRIGHT_BLUE, "Park Place","PARK PLC"},
 
-    gameBoard[39].tileName = "Boardwalk";
-    gameBoard[39].shortName = "BOARD W";
-    gameBoard[39].buyable = true;
-    */
+        // 38 Luxury Tax
+        {38,false,false,0,0,0,0,0,0,0,0,0,0,NONE, "Luxury Tax","LUXURY"},
 
+        // 39 Boardwalk
+        {39,false,true,400,200,200,0,50,200,600,1400,1700,2000, BRIGHT_BLUE, "Boardwalk","BOARD W"}
+    };
+
+    return tiles;
 }
 
-void displayGameBoard(tile* gameBoard){
+void displayGameBoard(std::vector<player>& players, std::vector<tile>& gameBoard){
+    clearTerminal();
+
+    //Map players to positions
+    //10 = Free
+    //40 = Jail
+    std::array<std::vector<std::string>, 41> positionMap;
+    for (const player& p : players) {
+        if (p.jailed) {
+            positionMap[40].push_back(p.symbol);
+            continue;
+        }
+        positionMap[p.currentPosition].push_back(p.symbol);
+    }
+    
+    //Raw Gameboard String
+    std::string board = R"(┌────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┐
+│ 20 FP      │ 21 KENTUCKY│ 22 CHANCE  │ 23 INDIANA │ 24 ILLINOIS│ 25 B&O RR  │ 26 ATLANTIC│ 27 VENTNOR │ 28 WATER   │ 29 MARVIN  │ 30 GOTOJAIL│
+│            │            │            │            │            │            │            │            │            │            │            │
+│ [20]   │ [21]   │ [22]   │ [23]   │ [24]   │ [25]   │ [26]   │ [27]   │ [28]   │ [29]   │ [30]   │
+│            │            │            │            │            │            │            │            │            │            │            │
+├────────────┼────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┼────────────┤
+│ 19 NEWYORK │                                                                                                                    │ 31 PACIFIC │
+│            │                                                                                                                    │            │
+│ [19]   │                                                                                                                    │ [31]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 18 TENNES  │                                                                                                                    │ 32 N CAROL │
+│            │                                                                                                                    │            │
+│ [18]   │                                                                                                                    │ [32]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 17 CC      │                                                                                                                    │ 33 CC      │
+│            │                                                                                                                    │            │
+│ [17]   │                                                                                                                    │ [33]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 16 STJAMES │                                                                                                                    │ 34 PENN AV │
+│            │                                                                                                                    │            │
+│ [16]   │                                                                                                                    │ [34]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 15 PA RR   │                                                                                                                    │ 35 SHORT RR│
+│            │                                                                                                                    │            │
+│ [15]   │                                                                                                                    │ [35]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 14 VIRGINIA│                                                                                                                    │ 36 CHANCE  │
+│            │                                                                                                                    │            │
+│ [14]   │                                                                                                                    │ [36]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 13 STATES  │                                                                                                                    │ 37 PARKPLC │
+│            │                                                                                                                    │            │
+│ [13]   │                                                                                                                    │ [37]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 12 ELECTRIC│                                                                                                                    │ 38 LUXURY  │
+│            │                                                                                                                    │            │
+│ [12]   │                                                                                                                    │ [38]   │
+│            │                                                                                                                    │            │
+├────────────┤                                                                                                                    ├────────────┤
+│ 11 ST CHAR │                                                                                                                    │ 39 Board W │
+│            │                                                                                                                    │            │
+│ [11]   │                                                                                                                    │ [39]   │
+│            │                                                                                                                    │            │
+├───┬────────┼────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┼────────────┤
+│ F │ 10 JAIL│ 9  CONNET  │ 8 VERMONT  │ 7 CHANCE   │ 6 ORIENTAL │ 5 READ RR  │ 4 INCOME   │ 3 BALTIC   │ 2 CC       │ 1 MED AVE  │ 0 GO       │
+│ R │[40]│            │            │            │            │            │            │            │            │            │            │
+│ E └────────┤ [09]   │ [08]   │ [07]   │ [06]   │ [05]   │ [04]   │ [03]   │ [02]   │ [01]   │ [00]   │
+│ E [10] │            │            │            │            │            │            │            │            │            │            │
+└────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┘)";
+
+    // Replace placeholders with player symbols
+    for (int i = 0; i < 41; ++i) {
+        // Create placeholder string [XX] format with leading 0's if needed
+        std::string placeholder = "[" + std::string(i < 10 ? "0" : "") + std::to_string(i) + "]";
+
+        std::string replacement;
+
+        // Append player symbols at this position, count number of players in field
+        int counter = 0;
+        for (const auto& symbol : positionMap[i]) {
+            counter++;
+            replacement += symbol;
+        }
+
+        // Fill remaining space with spaces to keep field width consistent
+        while (counter < 6) {
+            replacement += " ";
+            counter++;
+        }
+
+        replacement = "[" + replacement + "]";
+
+        // Replace in board string
+        size_t pos = board.find(placeholder);
+        if (pos != std::string::npos) {
+            board.replace(pos, 4, replacement);
+        }
+    }
+
+    // Replace player symbols with colored versions
+    for (const player& p : players) {
+        std::string replacement = colorCodes[p.color] + p.symbol + RESET_COLOR;
+        size_t pos = board.find(p.symbol);
+        if (pos != std::string::npos) {
+            board.replace(pos, p.symbol.length(), replacement);
+        }
+    }
+
+    // Replace tile short names with colored versions
+    for (const tile& t : gameBoard) {
+        std::string replacement = " " + colorCodes[t.color] + t.shortName + RESET_COLOR;
+        std::cout << "Replacing tile " << t.tileIndex << " short name '" << t.shortName << "' with '" << replacement << "'\n";
+        size_t pos = board.find(" " + t.shortName );
+        if (pos != std::string::npos) {
+            board.replace(pos, t.shortName.length()+1, replacement);
+        }
+    }
+
+    std::cout << board << std::endl;
 
 }
 
 /*
-┌───────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬─────────┐
-│ 20    │ Kentucky Ave │ Chance       │ Indiana Ave  │ Illinois Ave │ B&O RR       │ Atlantic Ave │ Ventnor Ave  │ Water Works  │ 30      │
-│ FP    │ (21)         │ (22)         │ (23)         │ (24)         │ (25)         │ (26)         │ (27)         │ (28)         │ GJ      │
-│       │ [    ]       │ [    ]       │ [    ]       │ [    ]       │ [    ]       │ [    ]       │ [    ]       │ [    ]       │         │
-├───────┼──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┼─────────┤
-│ New   │                                                                                                                       │ Marvin  │
-│ York  │                                                                                                                       │Gardens  │
-│ (19)  │                                                                                                                       │ (29)    │
-│[    ] │                                                                                                                       │[    ]   │
-├───────┤                                                                                                                       ├─────────┤
-│ Tenn  │                                                                                                                       │ Chance  │
-│ Ave   │                                                                                                                       │ (31)    │
-│ (18)  │                                                                                                                       │[    ]   │
-│[    ] │                                                                                                                       ├─────────┤
-├───────┤                                                                                                                       │ Pacific │
-│ CC    │                                                                                                                       │ Ave     │
-│ (17)  │                                                                                                                       │ (32)    │
-│[    ] │                                                                                                                       │[    ]   │
-├───────┤                                                                                                                       ├─────────┤
-│ St.   │                                                                                                                       │ N.      │
-│ James │                                                                                                                       │ Carolina│
-│ (16)  │                                                                                                                       │ (33)    │
-│[    ] │                                                                                                                       │[    ]   │
-├───────┤                                                                                                                       ├─────────┤
-│ Penn  │                                                                                                                       │ CC      │
-│ RR    │                                                                                                                       │ (34)    │
-│ (15)  │                                                                                                                       │[    ]   │
-│[    ] │                                                                                                                       ├─────────┤
-├───────┤                                                                                                                       │ Penn    │
-│ Vir-  │                                                                                                                       │ Ave     │
-│ ginia │                                                                                                                       │ (35)    │
-│ (14)  │                                                                                                                       │[    ]   │
-│[    ] │                                                                                                                       ├─────────┤
-├───────┤                                                                                                                       │ Short   │
-│ States│                                                                                                                       │ Line    │
-│ Ave   │                                                                                                                       │ RR      │
-│ (13)  │                                                                                                                       │ (36)    │
-│[    ] │                                                                                                                       │[    ]   │
-├───────┤                                                                                                                       ├─────────┤
-│ Elec  │                                                                                                                       │ Chance  │
-│ Co    │                                                                                                                       │ (37)    │
-│ (12)  │                                                                                                                       │[    ]   │
-│[    ] │                                                                                                                       ├─────────┤
-├───────┤                                                                                                                       │ Park    │
-│ Conn  │                                                                                                                       │ Place   │
-│ Ave   │                                                                                                                       │ (38)    │
-│ (11)  │                                                                                                                       │         │
-│[    ] │                                                                                                                       │[    ]   │
-├───────┼──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┼─────────┤
-│ 10    │ Mediterranean│ CC           │ Baltic Ave   │ Income Tax   │ Reading RR   │ Oriental Ave │ Chance       │ Vermont Ave  │ 0       │
-│ JAIL  │ (1)          │ (2)          │ (3)          │ (4)          │ (5)          │ (6)          │ (7)          │ (8)          │ GO      │
-│       │ [    ]       │ [    ]       │ [    ]       │              │ [    ]       │ [    ]       │ [    ]       │ [    ]       │         │
-└───────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴─────────┘
-
 
 0  = GO
 1  = Mediterranean Ave
@@ -362,88 +479,8 @@ void displayGameBoard(tile* gameBoard){
 38 = Luxury Tax
 39 = Boardwalk
 
-
-┌────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┐
-│ 20 FP      │ 21 KENTUCKY│ 22 CHANCE  │ 23 INDIANA │ 24 ILLINOIS│ 25 B&O RR  │ 26 ATLANTIC│ 27 VENTNOR │ 28 WATER   │ 29 MARVIN  │ 30 GOTOJAIL│
-│            │            │            │            │            │            │            │            │            │            │            │
-│ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │
-│            │            │            │            │            │            │            │            │            │            │            │
-├────────────┼────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┼────────────┤
-│ 19 NEWYORK │                                                                                                                    │ 31 Pacific │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 18 TENNES  │                                                                                                                    │ 32 N CAROL │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 17 CC      │                                                                                                                    │ 33 CC      │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 16 STJAMES │                                                                                                                    │ 34 PENN AV │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 15 PA RR   │                                                                                                                    │ 35 SHORT RR│
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 14 VIRGINIA│                                                                                                                    │ 36 CHANCE  │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 13 STATES  │                                                                                                                    │ 37 PARKPLC │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 12 ELECTRIC│                                                                                                                    │ 38 Luxury  │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├────────────┤                                                                                                                    ├────────────┤
-│ 11 CONN    │                                                                                                                    │ 39 Board W │
-│            │                                                                                                                    │            │
-│ [      ]   │                                                                                                                    │ [      ]   │
-│            │                                                                                                                    │            │
-├───┬────────┼────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┼────────────┤
-│ F │ 10 JAIL│ 9  Connet  │ 8 VERMONT  │ 7 CHANCE   │ 6 ORIENTAL │ 5 READ RR  │ 4 INCOME   │ 3 BALTIC   │ 2 CC       │ 1 MED AVE  │ 0 GO       │
-│ R │[      ]│            │            │            │            │            │            │            │            │            │            │
-│ E └────────┤ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │ [      ]   │
-│ E [      ] │            │            │            │            │            │            │            │            │            │            │
-└────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┘
-
 40 % 40 = 0 -> Reset
 10 -> Jail or no jail 
-
-🎉 Fun / Decorative Markers
-Symbol	Name	Unicode Code
-🤠	Cowboy Hat Face	U+1F920
-🧸	Teddy Bear	U+1F9F8
-🤖	Robot Face	U+1F916
-🐎	Horse	U+1F40E
-🎩 Objects Often Used as Monopoly Tokens
-Symbol	Name	Unicode Code
-🚗	Automobile	U+1F697
-🎩	Top Hat	U+1F3A9
-🐕	Dog	U+1F415
-🐈	Cat	U+1F408
-🚢	Ship	U+1F6A2
-🪙	Coin	U+1FA99
-🧳	Luggage	U+1F9F3
-🔑	Key	U+1F511
-🧍 People / Player Figures
-Symbol	Name	Unicode Code
-🧍	Person Standing	U+1F9CD
-🧑	Person	U+1F9D1
-👤	Bust in Silhouette	U+1F464
 
 */
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
@@ -498,134 +535,98 @@ bool action(int &sel, player &p, int &count, bool &ok){
 }
 
 int main(){
-    //tile *gameBoard = new tile[40];
-    //initizialeGameBoard(gameBoard);
-    std::vector<tile> gameBoard = {
+    // Initialize Gameboard
+    std::vector<tile> gameBoard = initizialeGameBoard();
 
-        // 0 GO
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "GO","GO"},
+    // Get number of players
+    std::cout<<"Please enter a number for players between 2 and 6:"<<std::endl;
+    int playersCount;
+    while (!(std::cin>>playersCount) || playersCount < 2 || playersCount > 6) {
+        std::cout<<"Invalid input. Please enter a number for players between 2 and 6:"<<std::endl;
+        clearInputBuffer();
+    }
 
-        // 1 Mediterranean Ave
-        {false,true,60,30,50,0, 2,10,30,90,160,250, BROWN, "Mediterranean Ave","MED AVE"},
+    // Vectors to track used symbols and colors
+    std::vector<std::string> usedSymbols;
+    std::vector<ColorGroup> usedColors;
 
-        // 2 Community Chest
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Community Chest","CC"},
-
-        // 3 Baltic Ave
-        {false,true,60,30,50,0, 4,20,60,180,320,450, BROWN, "Baltic Ave","BALTIC"},
-
-        // 4 Income Tax
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Income Tax","INCOME"},
-
-        // 5 Reading Railroad
-        {false,true,200,100,0,0, 25,50,100,200,0,0, RAILROAD, "Reading Railroad","READ RR"},
-
-        // 6 Oriental Ave
-        {false,true,100,50,50,0, 6,30,90,270,400,550, LIGHT_BLUE, "Oriental Ave","ORIENT"},
-
-        // 7 Chance
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Chance","CHANCE"},
-
-        // 8 Vermont Ave
-        {false,true,100,50,50,0, 6,30,90,270,400,550, LIGHT_BLUE, "Vermont Ave","VERMONT"},
-
-        // 9 Connecticut Ave
-        {false,true,120,60,50,0, 8,40,100,300,450,600, LIGHT_BLUE, "Connecticut Ave","CONNET"},
-
-        // 10 Jail
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Jail","JAIL"},
-
-        // 11 St. Charles Place
-        {false,true,140,70,100,0, 10,50,150,450,625,750, PINK, "St. Charles Place","ST CHAR"},
-
-        // 12 Electric Company
-        {false,true,150,75,0,0, 0,0,0,0,0,0, UTILITY, "Electric Company","ELECTRIC"},
-
-        // 13 States Ave
-        {false,true,140,70,100,0, 10,50,150,450,625,750, PINK, "States Ave","STATES"},
-
-        // 14 Virginia Ave
-        {false,true,160,80,100,0, 12,60,180,500,700,900, PINK, "Virginia Ave","VIRGINIA"},
-
-        // 15 Pennsylvania Railroad
-        {false,true,200,100,0,0, 25,50,100,200,0,0, RAILROAD, "Pennsylvania Railroad","PA RR"},
-
-        // 16 St. James Place
-        {false,true,180,90,100,0, 14,70,200,550,750,950, ORANGE, "St. James Place","ST JAMES"},
-
-        // 17 Community Chest
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Community Chest","CC"},
-
-        // 18 Tennessee Ave
-        {false,true,180,90,100,0, 14,70,200,550,750,950, ORANGE, "Tennessee Ave","TENNES"},
-
-        // 19 New York Ave
-        {false,true,200,100,100,0, 16,80,220,600,800,1000, ORANGE, "New York Ave","NEW YORK"},
-
-        // 20 Free Parking
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Free Parking","FP"},
-
-        // 21 Kentucky Ave
-        {false,true,220,110,150,0, 18,90,250,700,875,1050, RED, "Kentucky Ave","KENTUCKY"},
-
-        // 22 Chance
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Chance","CHANCE"},
-
-        // 23 Indiana Ave
-        {false,true,220,110,150,0, 18,90,250,700,875,1050, RED, "Indiana Ave","INDIANA"},
-
-        // 24 Illinois Ave
-        {false,true,240,120,150,0, 20,100,300,750,925,1100, RED, "Illinois Ave","ILLINOIS"},
-
-        // 25 B&O Railroad
-        {false,true,200,100,0,0, 25,50,100,200,0,0, RAILROAD, "B&O Railroad","B&O RR"},
-
-        // 26 Atlantic Ave
-        {false,true,260,130,150,0, 22,110,330,800,975,1150, YELLOW, "Atlantic Ave","ATLANTIC"},
-
-        // 27 Ventnor Ave
-        {false,true,260,130,150,0, 22,110,330,800,975,1150, YELLOW, "Ventnor Ave","VENTNOR"},
-
-        // 28 Water Works
-        {false,true,150,75,0,0, 0,0,0,0,0,0, UTILITY, "Water Works","WATER"},
-
-        // 29 Marvin Gardens
-        {false,true,280,140,150,0, 24,120,360,850,1025,1200, YELLOW, "Marvin Gardens","MARVIN"},
-
-        // 30 Go To Jail
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Go To Jail","GOTOJAIL"},
-
-        // 31 Pacific Ave
-        {false,true,300,150,200,0, 26,130,390,900,1100,1275, GREEN, "Pacific Ave","PACIFIC"},
-
-        // 32 North Carolina Ave
-        {false,true,300,150,200,0, 26,130,390,900,1100,1275, GREEN, "North Carolina Ave","N CAROL"},
-
-        // 33 Community Chest
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Community Chest","CC"},
-
-        // 34 Pennsylvania Ave
-        {false,true,320,160,200,0, 28,150,450,1000,1200,1400, GREEN, "Pennsylvania Ave","PENN AV"},
-
-        // 35 Short Line Railroad
-        {false,true,200,100,0,0, 25,50,100,200,0,0, RAILROAD, "Short Line Railroad","SHORT RR"},
-
-        // 36 Chance
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Chance","CHANCE"},
-
-        // 37 Park Place
-        {false,true,350,175,200,0, 35,175,500,1100,1300,1500, DARK_BLUE, "Park Place","PARK PLC"},
-
-        // 38 Luxury Tax
-        {false,false,0,0,0,0, 0,0,0,0,0,0, NONE, "Luxury Tax","LUXURY"},
-
-        // 39 Boardwalk
-        {false,true,400,200,200,0, 50,200,600,1400,1700,2000, DARK_BLUE, "Boardwalk","BOARD W"}
-    };
-    //List of players
+    // initialize Players
     std::vector<player> players;
+    for (int i = 0; i < playersCount; i++){
+        player p;
+        std::cout<<"Please enter the name of player "<< i+1 <<":"<<std::endl;
+        std::cin>>p.name;
+        p.jailed = false;
+        p.money = 1500;
+        p.currentPosition = 0;
+        p.playerId = i;
+        p.ownedStreets = {};
 
-    //displayGameBoard(gameBoard);
+        // Symbol Selection
+        std::cout << "Choose your symbol:\n";
+
+        // Display available symbols
+        for (size_t j = 0; j < availableSmybols.size(); ++j) {
+            if (std::find(usedSymbols.begin(), usedSymbols.end(), availableSmybols[j]) == usedSymbols.end())
+                std::cout << j << ": " << availableSmybols[j] << "  ";
+        }
+        std::cout << "\nEnter the number of your choice: ";
+
+        // Get valid choice
+        int choice = -1;
+        while (true) {
+            std::cin >> choice;
+            if (choice >= 0 && choice < (int)availableSmybols.size() &&
+                std::find(usedSymbols.begin(), usedSymbols.end(), availableSmybols[choice]) == usedSymbols.end()) {
+                break;
+            }
+            std::cout << "Invalid choice, please pick another: ";
+        }
+
+        // Assign and mark as used
+        std::string playerSymbol = availableSmybols[choice];
+        usedSymbols.push_back(playerSymbol);
+        p.symbol = playerSymbol;
+        std::cout << "You chose symbol: " << p.symbol << "\n";
+
+        // Color Selection
+        std::cout << "\nChoose your color:\n";
+        for (size_t j = 0; j < availableColors.size(); ++j) {
+            if (std::find(usedColors.begin(), usedColors.end(), availableColors[j].second) == usedColors.end()) {
+                std::cout << j << ": " 
+                          << colorCodes[j] << p.symbol << RESET_COLOR 
+                          << " (" << availableColors[j].first << ")  ";
+            }
+        }
+        std::cout << "\nEnter the number of your choice: ";
+
+        // Get valid choice
+        int colorChoice = -1;
+        while (true) {
+            std::cin >> colorChoice;
+            if (colorChoice >= 0 && colorChoice < (int)availableColors.size() &&
+                std::find(usedColors.begin(), usedColors.end(), availableColors[colorChoice].second) == usedColors.end()) {
+                break;
+            }
+            std::cout << "Invalid choice, please pick another: ";
+        }
+
+        // Assign and mark as used
+        ColorGroup playerColor = availableColors[colorChoice].second; // .second to get ColorGroup from pair (mapping)
+        p.color = playerColor;
+        usedColors.push_back(playerColor);
+        // usage of colorCodes vector to get ANSI code, then reset after symbol
+        std::cout << "You chose color: " << colorCodes[colorChoice] << p.symbol << RESET_COLOR << " (" << availableColors[colorChoice].first << ")\n";
+
+        // Add player to the list
+        players.push_back(p);
+    }
+
+    //Randomize Player Order
+    random_shuffle(players.begin(), players.end());
+
+    //Display Gameboard
+    displayGameBoard(players, gameBoard);
 
     //start of Gameloop :)
     int sel;
