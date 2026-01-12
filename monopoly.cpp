@@ -168,7 +168,7 @@ std::vector<tile> initizialeGameBoard() {
         {0,false,-1,false,0,0,0,0,0,0,0,0,0,0,NONE, "GO","GO"},
 
         // 1 Mediterranean Ave
-        {1,true,-1,true,60,30,50,0,2,10,30,90,160,250, BROWN, "Mediterranean Ave","MED AVE"},
+        {1,false,-1,true,60,30,50,0,2,10,30,90,160,250, BROWN, "Mediterranean Ave","MED AVE"},
 
         // 2 Community Chest
         {2,false,-1,false,0,0,0,0,0,0,0,0,0,0,NONE, "Community Chest","CC"},
