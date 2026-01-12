@@ -305,6 +305,7 @@ std::vector<player> initializePlayers() {
                 break;
             }
             std::cout << "Invalid choice, please pick another: ";
+            clearInputBuffer();
         }
 
         // Assign and mark as used
@@ -333,6 +334,7 @@ std::vector<player> initializePlayers() {
                 break;
             }
             std::cout << "Invalid choice, please pick another: ";
+            clearInputBuffer();
         }
 
         // Assign and mark as used
@@ -576,6 +578,7 @@ void movePlayer(int x, int y, player &p){
     }else {
         p.currentPosition = temp - 40;
     }
+    displayGameBoard();
 }
 
 void arrest(player &p){
@@ -599,7 +602,7 @@ bool action(int &sel, player &p, int &count, bool &ok){
         case 0:{
             return ok;
         }case 1:{
-            if(!count || ok == true){
+            if(!count || ok == false){
                 count++;
                 int x = rollDice();
                 int y = rollDice();
@@ -627,7 +630,6 @@ bool action(int &sel, player &p, int &count, bool &ok){
             #
             return false;
         }case 10:{
-            #
             return true;
         }default:{
             sel = -1;
@@ -658,8 +660,10 @@ int main(){
                 control = action(sel,currentPlayer,count,rolled);
                 if(sel == 10){
                     break;
+                }else if(!control){
+                    sel = -1;
                 }
-            }while(sel && !control);
+            }while(sel);
         }
     }while(sel != 10);
 
