@@ -17,4 +17,24 @@ Spielbrettsicht [statische Aufbau mit wechsel zu Monopolymann in der Mitte wenn 
 	Frei Parken, Komme ins Gefäängnis, Gefängnis, Karten zieh plätze(Community and Chance), Stuerfelder(1 Hälfte Runden einkommen andere ganze Rundeneinkommen), Überlos = Rundeneinkommen, Auflos = doppeltes Rundeneinkommen
 
 
+ToDo:
+Fix Bug initialize player "q" as value not allowed.
+Clean up methods + add comments
+Expand ReadMe
+Community Chest Cards + Chance Cards
+Implement jail logic (free after 3 turns)
 
+
+Roll dice -> display rolled values
+Hypothesize card + pay of hypothek (half value + 10%)
+Buy and Sell homes (for half price)
+Trade with players (low prio)
+Rearrange menu for better ui
+Income 200 and Luxury 100 field
+Pass 200 / Land 400 on go
+Free Parking field
+GoToJail implementation
+
+
+rent payments -> Bankcruptcy check
+Bankcruptcy (low)

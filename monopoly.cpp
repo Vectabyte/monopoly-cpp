@@ -66,13 +66,14 @@ const std::vector<std::pair<std::string, ColorGroup>> colorCodes = {
 };
 
 
-const std::string RESET_COLOR = "\033[0m";
-
 #include "player.hpp"
 #include "tile.hpp"
 
+//Global Variables
 std::vector<tile> gameBoard;
 std::vector<player> players;
+const std::string RESET_COLOR = "\033[0m";
+int freeParkingFunds = 0;
 
 void clearInputBuffer() {
     std::cin.clear();
