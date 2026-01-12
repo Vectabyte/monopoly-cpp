@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <ostream>
 #include <random>
 #include <string>
 #include <vector>
@@ -27,7 +28,6 @@ enum ColorGroup {
 const std::vector<std::string> availableSmybols = {
         "♠","♣","♥","♦","●","○","■","□",
         "▲","▼","◆","◇","★","☆","✪","✦","✧","✚","✖",
-        "⚀","⚁","⚂","⚃","⚄","⚅",
         "♜","♞","♝","♛","♚"
 };
 
@@ -563,7 +563,7 @@ int rollDice(){
     return dis(gen);
 }
 
-bool checkPasch(int x, int y){
+bool checkPasch(int &x, int &y){
     if(x != y){
         return false;
     }else{
@@ -571,49 +571,146 @@ bool checkPasch(int x, int y){
     }
 }
 
-void movePlayer(int x, int y, player &p){
-    int s = x+y;
-    p.currentPosition = (p.currentPosition+s)%40; 
-    displayGameBoard();
-}
-
 void arrest(player &p){
     p.jailed = true;
     p.currentPosition = 10;
+    displayGameBoard();
+}
+
+void visualDice(int &x){
+    switch (x) {
+        case 1:{
+            std::cout<<"⚀ ";
+            break;
+        }case 2:{
+            std::cout<<"⚁ ";
+            break;
+        }case 3:{
+            std::cout<<"⚂ ";
+            break;
+        }case 4:{
+            std::cout<<"⚃ ";
+            break;
+        }case 5:{
+            std::cout<<"⚄ ";
+            break;
+        }case 6:{
+            std::cout<<"⚅ ";
+            break;
+        }
+    }
+}
+
+void transferMoney(player &from, player &to, int amount){
+    from.money = from.money - amount;
+    to.money = to.money + amount;
+}
+
+void movePlayer(int &x, int &y, player &p){
+    int s = x+y;
+    if(p.currentPosition+s > 40){
+        p.money = p.money + 200;
+    }
+    p.currentPosition = (p.currentPosition+s)%40; 
+    switch (p.currentPosition){
+        case 0:{ //Tiletyp: GO
+            p.money = p.money + 400;
+            displayGameBoard();
+            break;
+        }case 2:{ //Tiletyp: Com Chest
+            #
+            displayGameBoard();
+            break;
+        }
+        case 4:{ //Tiletyp: Income Tax
+            p.money = p.money - 200;
+            displayGameBoard();
+            break;
+        }case 7:{ //Tiletyp: Chance
+            #
+            displayGameBoard();
+            break;
+        }case 17:{ //Tiletyp: Com Chest
+            #
+            displayGameBoard();
+            break;
+        }case 20:{ //Tiletyp: FreeParking
+            p.money = p.money + freeParkingFunds;
+            displayGameBoard();
+            break;
+        }case 22:{ //Tiletyp: Chance
+            #
+            displayGameBoard();
+            break;
+        }case 30:{ //Tiletyp: GoToJail
+            arrest(p);
+            displayGameBoard();
+            break;
+        }case 33:{ //Tiletyp: Com Chest
+            #
+            displayGameBoard();
+            break;
+        }case 36:{ //Tiletyp: Chance
+            #
+            displayGameBoard();
+            break;
+        }case 38:{ //Tiletyp: Luxury Tax
+            p.money = p.money - 100;
+            displayGameBoard();
+            break;
+        }default:{ //Tiletyp: Streets, Trainstations, Facilities
+            #
+            displayGameBoard();
+            break;
+        }
+    }
 }
 
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
 bool action(int &sel, player &p, int &count, bool &ok){
     std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"
     <<"What do you want to do? \n"
-    <<"1 = Roll the dices \n"
-    <<"2 = Hypothesize cards \n"
-    <<"3 = Build houses \n"
-    <<"4 = Trade with player \n"
-    <<"0 = End your turn \n"
-    <<"10 = Quit the whole game early"
+    <<"--------------------------------------------------------------------------------------------------------------------------------------------\n"
+    <<"| 1 = Roll the dices | "
+    <<"2 = Hypothesize cards | "
+    <<"3 = Build houses | "
+    <<"4 = Trade with player |"
+    <<"0 = End your turn |"
+    <<"10 = Quit the whole game early | "
+    <<p.money<<"$ |\n"
+    <<"--------------------------------------------------------------------------------------------------------------------------------------------"
     <<std::endl;
     std::cin>>sel;
     switch (sel) {
         case 0:{
+            displayGameBoard();
+            if(!ok){
+                std::cout<<"You havn't rolled enough dice! 😡"<<std::endl;
+            }
             return ok;
         }case 1:{
             if(!count || ok == false){
                 count++;
                 int x = rollDice();
                 int y = rollDice();
+                movePlayer(x,y,p);
+                visualDice(x);
+                visualDice(y);
+                std::cout<<std::endl;
                 if(count == 3 && checkPasch(x,y)){
                     arrest(p);
                     sel = 0;
+                    std::cout<<"You had too much luck! 😡"<<std::endl;
                     return true;
                 }
-                movePlayer(x,y,p);
-                #
                 if(!checkPasch(x, y)){
                     ok = true;
                 }else{
                     ok = false;
                 }
+            }else{
+                displayGameBoard();
+                std::cout<<"You have already rolled enough dice! 😡"<<std::endl;
             }
             return false;
         }case 2:{
@@ -660,6 +757,9 @@ int main(){
                     sel = -1;
                 }
             }while(sel);
+            if(sel == 10){
+                break;
+            }
         }
     }while(sel != 10);
 

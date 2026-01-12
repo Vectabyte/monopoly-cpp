@@ -29,11 +29,11 @@ Roll dice -> display rolled values
 Hypothesize card + pay of hypothek (half value + 10%)
 Buy and Sell homes (for half price)
 Trade with players (low prio)
-Rearrange menu for better ui
-Income 200 and Luxury 100 field
-Pass 200 / Land 400 on go
-Free Parking field
-GoToJail implementation
+Rearrange menu for better ui / done
+Income 200 and Luxury 100 field / done
+Pass 200 / Land 400 on go / done
+Free Parking field / done
+GoToJail implementation / done
 
 
 rent payments -> Bankcruptcy check
