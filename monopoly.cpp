@@ -71,6 +71,9 @@ const std::string RESET_COLOR = "\033[0m";
 #include "player.hpp"
 #include "tile.hpp"
 
+std::vector<tile> gameBoard;
+std::vector<player> players;
+
 void clearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -271,7 +274,7 @@ std::vector<player> initializePlayers() {
     std::vector<ColorGroup> usedColors;
 
     // initialize Players
-    std::vector<player> players;
+    std::vector<player> initPlayers;
     for (int i = 0; i < playersCount; i++){
         std::cout << "\n==============================================================================" << std::endl;
         player p;
@@ -339,12 +342,12 @@ std::vector<player> initializePlayers() {
         // usage of colorCodes vector to get ANSI code, then reset after symbol
         std::cout << "You chose color: " << colorCodes[colorChoice + 1].first << p.symbol << RESET_COLOR << " (" << availableColors[colorChoice + 1].first << ")" << std::endl;
         // Add player to the list
-        players.push_back(p);
+        initPlayers.push_back(p);
     }
-    return players;
+    return initPlayers;
 }
 
-void displayGameBoard(std::vector<player>& players, std::vector<tile>& gameBoard){
+void displayGameBoard(){
     clearTerminal();
 
     //Map players to positions
@@ -582,7 +585,8 @@ void arrest(player &p){
 
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
 bool action(int &sel, player &p, int &count, bool &ok){
-    std::cout<<"What to do? \n"
+    std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"
+    <<"What do you want to do? \n"
     <<"1 = Roll the dices \n"
     <<"2 = Hypothesize cards \n"
     <<"3 = Build houses \n"
@@ -632,14 +636,14 @@ bool action(int &sel, player &p, int &count, bool &ok){
 
 int main(){
     // Initialize Gameboard
-    std::vector<tile> gameBoard = initizialeGameBoard();
-    std::vector<player> players = initializePlayers();
+    gameBoard = initizialeGameBoard();
+    players = initializePlayers();
 
     //Randomize Player Order
     random_shuffle(players.begin(), players.end());
 
     //Display Gameboard
-    displayGameBoard(players, gameBoard);
+    displayGameBoard();
 
     //start of Gameloop :)
     int sel;
