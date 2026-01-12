@@ -81,37 +81,6 @@ void clearTerminal() {
     fflush(stdout);
 }
 
-int rollDice(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1,6);
-    
-    return dis(gen);
-}
-
-bool checkPasch(int x, int y){
-    if(x != y){
-        return false;
-    }else{
-        return true;
-    }
-}
-
-void movePlayer(int x, int y, player &p){
-    int s = x+y;
-    int temp = p.currentPosition+s; 
-    if(temp < 40){
-        p.currentPosition = temp;
-    }else {
-        p.currentPosition = temp - 40;
-    }
-}
-
-void arrest(player &p){
-    p.jailed = true;
-    p.currentPosition = 10;
-}
-
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
 {
     if (utilitiesOwned == 1)
@@ -578,8 +547,39 @@ void displayGameBoard(std::vector<player>& players, std::vector<tile>& gameBoard
 
 40 % 40 = 0 -> Reset
 10 -> Jail or no jail 
-
 */
+
+int rollDice(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1,6);
+    
+    return dis(gen);
+}
+
+bool checkPasch(int x, int y){
+    if(x != y){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+void movePlayer(int x, int y, player &p){
+    int s = x+y;
+    int temp = p.currentPosition+s; 
+    if(temp < 40){
+        p.currentPosition = temp;
+    }else {
+        p.currentPosition = temp - 40;
+    }
+}
+
+void arrest(player &p){
+    p.jailed = true;
+    p.currentPosition = 10;
+}
+
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
 bool action(int &sel, player &p, int &count, bool &ok){
     std::cout<<"What to do? \n"
@@ -650,7 +650,10 @@ int main(){
             int count = 0;
             do{
                 control = action(sel,currentPlayer,count,rolled);
-            }while(sel && control || sel != 10);
+                if(sel == 10){
+                    break;
+                }
+            }while(sel && !control);
         }
     }while(sel != 10);
 
