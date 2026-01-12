@@ -599,20 +599,22 @@ bool action(int &sel, player &p, int &count, bool &ok){
         case 0:{
             return ok;
         }case 1:{
-            count++;
-            int x = rollDice();
-            int y = rollDice();
-            if(count == 3 && checkPasch(x,y)){
-                arrest(p);
-                sel = 0;
-                return true;
-            }
-            movePlayer(x,y,p);
-            #
-            if(!checkPasch(x, y)){
-                ok = true;
-            }else{
-                ok = false;
+            if(!count || ok == true){
+                count++;
+                int x = rollDice();
+                int y = rollDice();
+                if(count == 3 && checkPasch(x,y)){
+                    arrest(p);
+                    sel = 0;
+                    return true;
+                }
+                movePlayer(x,y,p);
+                #
+                if(!checkPasch(x, y)){
+                    ok = true;
+                }else{
+                    ok = false;
+                }
             }
             return false;
         }case 2:{
