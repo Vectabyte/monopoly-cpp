@@ -299,13 +299,13 @@ std::vector<player> initializePlayers() {
         // Get valid choice
         int choice = -1;
         while (true) {
+            clearInputBuffer();
             std::cin >> choice;
             if (choice >= 0 && choice < (int)availableSmybols.size() &&
                 std::find(usedSymbols.begin(), usedSymbols.end(), availableSmybols[choice]) == usedSymbols.end()) {
                 break;
             }
             std::cout << "Invalid choice, please pick another: ";
-            clearInputBuffer();
         }
 
         // Assign and mark as used
@@ -328,13 +328,13 @@ std::vector<player> initializePlayers() {
         // Get valid choice
         int colorChoice = -1;
         while (true) {
+            clearInputBuffer();
             std::cin >> colorChoice;
             if (colorChoice >= 0 && colorChoice < ((int)availableColors.size() - 1) &&
                 std::find(usedColors.begin(), usedColors.end(), availableColors[colorChoice + 1].second) == usedColors.end()) {
                 break;
             }
             std::cout << "Invalid choice, please pick another: ";
-            clearInputBuffer();
         }
 
         // Assign and mark as used
@@ -572,12 +572,7 @@ bool checkPasch(int x, int y){
 
 void movePlayer(int x, int y, player &p){
     int s = x+y;
-    int temp = p.currentPosition+s; 
-    if(temp < 40){
-        p.currentPosition = temp;
-    }else {
-        p.currentPosition = temp - 40;
-    }
+    p.currentPosition = (p.currentPosition+s)%40; 
     displayGameBoard();
 }
 
