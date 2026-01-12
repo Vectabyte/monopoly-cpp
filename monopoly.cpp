@@ -505,10 +505,7 @@ bool action(int &sel, player &p, int &count, bool &ok){
     <<std::endl;
     std::cin>>sel;
     switch (sel) {
-        default:{
-            sel = -1;
-            return false;
-        }case 0:{
+        case 0:{
             return ok;
         }case 1:{
             count++;
@@ -539,8 +536,10 @@ bool action(int &sel, player &p, int &count, bool &ok){
         }case 10:{
             #
             return true;
+        }default:{
+            sel = -1;
+            return false;
         }
-
     }
 }
 
