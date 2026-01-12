@@ -4,6 +4,7 @@
 typedef struct tile {
     int tileIndex;
     bool owned;
+    int ownerId;
     bool buyable;
 
     int buyPrice;
