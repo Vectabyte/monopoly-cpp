@@ -631,7 +631,10 @@ void movePlayer(int &x, int &y, player &p){
         }case 7:{ //Tiletyp: Chance
             #
             break;
-        }case 17:{ //Tiletyp: Com Chest
+        }case 10:{ //Tiletyp: visit Jail
+            break;
+        }
+        case 17:{ //Tiletyp: Com Chest
             #
             break;
         }case 20:{ //Tiletyp: FreeParking
@@ -686,10 +689,37 @@ void movePlayer(int &x, int &y, player &p){
                             }
                         }
                     }
+                }else{
+                    displayGameBoard();
+                    std::cout<<"Not enough Money. 😢"<<std::endl;
                 }
             }else{
                 displayGameBoard();
-                std::cout<<"Not enough Money. 😢"<<std::endl;
+                int payload;
+                switch (currentfield.upgradeStage){
+                    case 1:{
+                        payload = currentfield.price1;
+                    }case 2:{
+                        payload = currentfield.price2;
+                    }case 3:{
+                        payload = currentfield.price3;
+                    }case 4:{
+                        payload = currentfield.price4;
+                    }case 5:{
+                        payload = currentfield.price5;
+                    }default:{
+                        payload = currentfield.price0;
+                    }
+                }
+                bool bankrupt = false;
+                p.money = p.money - payload;
+                if(p.money<0){
+                    #
+                }
+                if(!bankrupt){
+                    players[currentfield.ownerId].money = players[currentfield.ownerId].money + payload;
+                    std::cout<<"You had to pay " << payload << " to " << players[currentfield.ownerId].name <<std::endl;
+                }
             }
             break;
         }
