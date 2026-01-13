@@ -66,16 +66,6 @@ const std::vector<std::pair<std::string, ColorGroup>> colorCodes = {
     {"\033[38;2;102;0;255m", PURPLE}
 };
 
-
-#include "player.hpp"
-#include "tile.hpp"
-
-//Global Variables
-std::vector<tile> gameBoard;
-std::vector<player> players;
-const std::string RESET_COLOR = "\033[0m";
-int freeParkingFunds = 0;
-
 void clearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -85,6 +75,15 @@ void clearTerminal() {
     fputs("\x1b[1;1H\x1b[2J\x1b[3J", stdout);
     fflush(stdout);
 }
+
+#include "player.hpp"
+#include "tile.hpp"
+
+//Global Variables
+std::vector<tile> gameBoard;
+std::vector<player> players;
+const std::string RESET_COLOR = "\033[0m";
+int freeParkingFunds = 0;
 
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
 {
