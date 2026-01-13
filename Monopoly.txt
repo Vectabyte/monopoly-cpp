@@ -18,7 +18,7 @@ Spielbrettsicht [statische Aufbau mit wechsel zu Monopolymann in der Mitte wenn 
 
 
 ToDo:
-Fix Bug initialize player "q" as value not allowed.
+Fix Bug initialize player "q" as value not allowed. / done
 Clean up methods + add comments
 Expand ReadMe
 Community Chest Cards + Chance Cards
