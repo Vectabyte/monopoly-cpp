@@ -1,6 +1,14 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <iostream>
+#include <limits>
+#include <ostream>
+#include <random>
+#include <string>
+#include <vector>
+#include <array>
+#include <algorithm>
 
 typedef struct player{
         std::string name;

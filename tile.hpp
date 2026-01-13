@@ -1,5 +1,13 @@
 #pragma once
 #include <string>
+#include <iostream>
+#include <limits>
+#include <ostream>
+#include <random>
+#include <string>
+#include <vector>
+#include <array>
+#include <algorithm>
 
 typedef struct tile {
     int tileIndex;

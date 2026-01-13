@@ -76,13 +76,12 @@ void clearTerminal() {
     fflush(stdout);
 }
 
+//Global Variables
+const std::string RESET_COLOR = "\033[0m";
 #include "player.hpp"
 #include "tile.hpp"
-
-//Global Variables
 std::vector<tile> gameBoard;
 std::vector<player> players;
-const std::string RESET_COLOR = "\033[0m";
 int freeParkingFunds = 0;
 
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
@@ -257,6 +256,7 @@ void displayGameBoard(){
         // Place owned / houses
         size_t posStatus = board.find(placeholderOwned);
         if (posStatus != std::string::npos) {
+            std::cout<<"Tile: "<<t.tileName<<" OwnerId: "<<t.ownerId<<" UpgradeStage: "<<t.upgradeStage<<std::endl;
             if (t.ownerId == -1) {
                 ownedStatus = "     ";
             } else {
@@ -396,6 +396,7 @@ void movePlayer(int &x, int &y, player &p){
     p.currentPosition = (p.currentPosition+s)%40;
     displayGameBoard();
     visualDice(x);
+    std::cout<<"+ ";
     visualDice(y);
     std::cout<<std::endl;
     switch (p.currentPosition){
@@ -437,7 +438,7 @@ void movePlayer(int &x, int &y, player &p){
             p.money = p.money - 100;
             break;
         }default:{ //Tiletyp: Streets, Trainstations, Facilities
-            tile currentfield = gameBoard[p.currentPosition];
+            tile& currentfield = gameBoard[p.currentPosition];
             if( currentfield.ownerId == -1){
                 if(p.money >= currentfield.buyPrice){
                     bool correct = false;
@@ -517,8 +518,7 @@ bool action(int &sel, player &p, int &count, bool &ok){
     <<"3 = Building Menue | "
     <<"4 = Trade with player |"
     <<"0 = End your turn |"
-    <<"77 = Quit the whole game early | "
-    <<"Balance: "<<p.money<<"$\n"
+    <<"77 = Quit the whole game early |\n"
     <<"--------------------------------------------------------------------------------------------------------------------------------------------"
     <<std::endl;
     std::cin>>sel;
@@ -535,9 +535,6 @@ bool action(int &sel, player &p, int &count, bool &ok){
                 int x = rollDice();
                 int y = rollDice();
                 movePlayer(x,y,p);
-                visualDice(x);
-                std::cout<<"+ ";
-                visualDice(y);
                 std::cout<<std::endl;
                 if(count == 3 && checkPasch(x,y)){
                     arrest(p);
