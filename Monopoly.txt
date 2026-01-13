@@ -25,7 +25,7 @@ Community Chest Cards + Chance Cards
 Implement jail logic (free after 3 turns)
 
 
-Roll dice -> display rolled values
+Roll dice -> display rolled values / done
 Hypothesize card + pay of hypothek (half value + 10%)
 Buy and Sell homes (for half price)
 Trade with players (low prio)

@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <limits>
 #include <ostream>
@@ -573,8 +574,8 @@ bool checkPasch(int &x, int &y){
 
 void arrest(player &p){
     p.jailed = true;
-    p.currentPosition = 10;
     displayGameBoard();
+    std::cout<<"You have been arrested! 😡"<<std::endl;
 }
 
 void visualDice(int &x){
@@ -611,56 +612,85 @@ void movePlayer(int &x, int &y, player &p){
     if(p.currentPosition+s > 40){
         p.money = p.money + 200;
     }
-    p.currentPosition = (p.currentPosition+s)%40; 
+    p.currentPosition = (p.currentPosition+s)%40;
+    displayGameBoard();
+    visualDice(x);
+    visualDice(y);
+    std::cout<<std::endl;
     switch (p.currentPosition){
         case 0:{ //Tiletyp: GO
             p.money = p.money + 400;
-            displayGameBoard();
             break;
         }case 2:{ //Tiletyp: Com Chest
             #
-            displayGameBoard();
             break;
         }
         case 4:{ //Tiletyp: Income Tax
             p.money = p.money - 200;
-            displayGameBoard();
             break;
         }case 7:{ //Tiletyp: Chance
             #
-            displayGameBoard();
             break;
         }case 17:{ //Tiletyp: Com Chest
             #
-            displayGameBoard();
             break;
         }case 20:{ //Tiletyp: FreeParking
             p.money = p.money + freeParkingFunds;
-            displayGameBoard();
             break;
         }case 22:{ //Tiletyp: Chance
             #
-            displayGameBoard();
             break;
         }case 30:{ //Tiletyp: GoToJail
             arrest(p);
-            displayGameBoard();
             break;
         }case 33:{ //Tiletyp: Com Chest
             #
-            displayGameBoard();
             break;
         }case 36:{ //Tiletyp: Chance
             #
-            displayGameBoard();
             break;
         }case 38:{ //Tiletyp: Luxury Tax
             p.money = p.money - 100;
-            displayGameBoard();
             break;
         }default:{ //Tiletyp: Streets, Trainstations, Facilities
-            #
-            displayGameBoard();
+            tile currentfield = gameBoard[p.currentPosition];
+            if( currentfield.ownerId == -1){
+                if(p.money >= currentfield.buyPrice){
+                    bool correct = false;
+                    while(!correct){
+                        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR 
+                        << "Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << " ?"<<std::endl;
+                        std::cout<<"------------------\n"
+                        <<"| 1: YES | "
+                        <<"0: NO |\n"
+                        <<"------------------\n"
+                        <<std::endl;
+                        int sel;
+                        std::cin>>sel;
+                        switch (sel) {
+                            case 1:{
+                                p.money = p.money - currentfield.buyPrice;
+                                currentfield.ownerId = p.playerId;
+                                displayGameBoard();
+                                correct = true;
+                                std::cout<<"Bravo you have succesfully puchased "<< currentfield.tileName <<"! 🥳" <<std::endl;
+                                break;
+                            }case 0:{
+                                displayGameBoard();
+                                std::cout<<"Why tho? 🤨 "<<std::endl;
+                                correct = true;
+                                break;
+                            }default:{
+                                displayGameBoard();
+                                std::cout<<"No Valid Input! 😡"<<std::endl;
+                            }
+                        }
+                    }
+                }
+            }else{
+                displayGameBoard();
+                std::cout<<"Not enough Money. 😢"<<std::endl;
+            }
             break;
         }
     }
@@ -672,12 +702,12 @@ bool action(int &sel, player &p, int &count, bool &ok){
     <<"What do you want to do? \n"
     <<"--------------------------------------------------------------------------------------------------------------------------------------------\n"
     <<"| 1 = Roll the dices | "
-    <<"2 = Hypothesize cards | "
-    <<"3 = Build houses | "
+    <<"2 = Financial Menue | "
+    <<"3 = Building Menue | "
     <<"4 = Trade with player |"
     <<"0 = End your turn |"
-    <<"10 = Quit the whole game early | "
-    <<p.money<<"$ |\n"
+    <<"77 = Quit the whole game early | "
+    <<"Balance: "<<p.money<<"$\n"
     <<"--------------------------------------------------------------------------------------------------------------------------------------------"
     <<std::endl;
     std::cin>>sel;
@@ -694,13 +724,9 @@ bool action(int &sel, player &p, int &count, bool &ok){
                 int x = rollDice();
                 int y = rollDice();
                 movePlayer(x,y,p);
-                visualDice(x);
-                visualDice(y);
-                std::cout<<std::endl;
                 if(count == 3 && checkPasch(x,y)){
                     arrest(p);
                     sel = 0;
-                    std::cout<<"You had too much luck! 😡"<<std::endl;
                     return true;
                 }
                 if(!checkPasch(x, y)){
@@ -722,10 +748,12 @@ bool action(int &sel, player &p, int &count, bool &ok){
         }case 4:{
             #
             return false;
-        }case 10:{
+        }case 77:{
             return true;
         }default:{
             sel = -1;
+            displayGameBoard();
+            std::cout<<"No Valid Input! 😡"<<std::endl;
             return false;
         }
     }
@@ -751,17 +779,17 @@ int main(){
             int count = 0;
             do{
                 control = action(sel,currentPlayer,count,rolled);
-                if(sel == 10){
+                if(sel == 77){
                     break;
                 }else if(!control){
                     sel = -1;
                 }
             }while(sel);
-            if(sel == 10){
+            if(sel == 77){
                 break;
             }
         }
-    }while(sel != 10);
+    }while(sel != 77);
 
     return 0;
 }
