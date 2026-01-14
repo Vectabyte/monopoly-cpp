@@ -22,6 +22,7 @@ Fix Bug initialize player "q" as value not allowed. / done
 Clean up methods + add comments
 Expand ReadMe
 Community Chest Cards + Chance Cards / done - not implemented: move to nearest railroad (pay twice rend), move to nearest utility (pay 10 times dice roll), only move part implemented
+Overhaul of display messaged (when to say "you drew card x") maybe necessary?
 Implement jail logic (free after 3 turns) / done
 
 
