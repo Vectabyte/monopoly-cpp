@@ -394,6 +394,31 @@ void transferMoney(player &from, player &to, int amount){
     to.money = to.money + amount;
 }
 
+void drawCard(std::string type, player& player) {
+    card currentCard;
+
+    // Get current Card, shuffle if every card was used once
+    if (type == "chance") {
+        if (chanceCardCounter == chanceCards.size()) {
+            chanceCardCounter = 0;
+            random_shuffle(chanceCards.begin(), chanceCards.end());
+        }
+        card& currentCard = chanceCards[chanceCardCounter];
+        chanceCardCounter++;
+    } else if (type == "community") {
+        if (communityCardCounter == communityCards.size()) {
+            communityCardCounter = 0;
+            random_shuffle(communityCards.begin(), communityCards.end());
+        }
+        card& currentCard = communityCards[communityCardCounter];
+    }
+
+    
+    if (currentCard.action == "receive") {
+        player.money += std::stoi(currentCard.value["amount"]);
+    }
+}
+
 void movePlayer(int &x, int &y, player &p, bool &ok){
     int s = x+y;
     if(p.currentPosition+s > 40){
@@ -584,31 +609,6 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
             std::cout<<"No Valid Input! 😡"<<std::endl;
             return false;
         }
-    }
-}
-
-void drawCard(std::string type, player& player) {
-    card currentCard;
-
-    // Get current Card, shuffle if every card was used once
-    if (type == "chance") {
-        if (chanceCardCounter == chanceCards.size()) {
-            chanceCardCounter = 0;
-            random_shuffle(chanceCards.begin(), chanceCards.end());
-        }
-        card& currentCard = chanceCards[chanceCardCounter];
-        chanceCardCounter++;
-    } else if (type == "community") {
-        if (communityCardCounter == communityCards.size()) {
-            communityCardCounter = 0;
-            random_shuffle(communityCards.begin(), communityCards.end());
-        }
-        card& currentCard = communityCards[communityCardCounter];
-    }
-
-    
-    if (currentCard.action == "receive") {
-        player.money += std::stoi(currentCard.value["amount"]);
     }
 }
 
