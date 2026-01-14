@@ -80,9 +80,14 @@ void clearTerminal() {
 const std::string RESET_COLOR = "\033[0m";
 #include "player.hpp"
 #include "tile.hpp"
+#include "card.hpp"
 std::vector<tile> gameBoard;
 std::vector<player> players;
+std::vector<card> communityCards;
+std::vector<card> chanceCards;
 int freeParkingFunds = 0;
+int communityCardCounter = 0;
+int chanceCardCounter = 0;
 
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
 {
@@ -402,38 +407,39 @@ void movePlayer(int &x, int &y, player &p, bool &ok){
     std::cout<<std::endl;
     switch (p.currentPosition){
         case 0:{ //Tiletyp: GO
-            p.money = p.money + 400;
+            p.money = p.money + 200;
             break;
         }case 2:{ //Tiletyp: Com Chest
-            #
+            drawCard("community", p);
             break;
         }
         case 4:{ //Tiletyp: Income Tax
             p.money = p.money - 200;
             break;
         }case 7:{ //Tiletyp: Chance
-            #
+            drawCard("chance", p);
             break;
         }case 10:{ //Tiletyp: visit Jail
             break;
         }
         case 17:{ //Tiletyp: Com Chest
-            #
+            drawCard("community", p);
             break;
         }case 20:{ //Tiletyp: FreeParking
             p.money = p.money + freeParkingFunds;
+            freeParkingFunds = 0;
             break;
         }case 22:{ //Tiletyp: Chance
-            #
+            drawCard("chance", p);
             break;
         }case 30:{ //Tiletyp: GoToJail
             arrest(p,ok);
             break;
         }case 33:{ //Tiletyp: Com Chest
-            #
+            drawCard("community", p);
             break;
         }case 36:{ //Tiletyp: Chance
-            #
+            drawCard("chance", p);
             break;
         }case 38:{ //Tiletyp: Luxury Tax
             p.money = p.money - 100;
@@ -581,6 +587,31 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
     }
 }
 
+void drawCard(std::string type, player& player) {
+    card currentCard;
+
+    // Get current Card, shuffle if every card was used once
+    if (type == "chance") {
+        if (chanceCardCounter == chanceCards.size()) {
+            chanceCardCounter = 0;
+            random_shuffle(chanceCards.begin(), chanceCards.end());
+        }
+        card& currentCard = chanceCards[chanceCardCounter];
+        chanceCardCounter++;
+    } else if (type == "community") {
+        if (communityCardCounter == communityCards.size()) {
+            communityCardCounter = 0;
+            random_shuffle(communityCards.begin(), communityCards.end());
+        }
+        card& currentCard = communityCards[communityCardCounter];
+    }
+
+    
+    if (currentCard.action == "receive") {
+        player.money += std::stoi(currentCard.value["amount"]);
+    }
+}
+
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
 bool normalaction(int &sel, player &p, int &count, bool &ok){
     std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
@@ -646,7 +677,9 @@ bool normalaction(int &sel, player &p, int &count, bool &ok){
 
 int main(){
     // Initialize Gameboard
-    gameBoard = initizialeGameBoard();
+    gameBoard = initializeGameBoard();
+    chanceCards = initializeChanceCards();
+    communityCards = initializeCommunityCards();
     players = initializePlayers();
 
     //Randomize Player Order

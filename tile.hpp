@@ -26,7 +26,7 @@ typedef struct tile {
     std::string shortName;
 } tile;
 
-std::vector<tile> initizialeGameBoard() {
+std::vector<tile> initializeGameBoard() {
     // Initialize Gameboard with all tiles
     std::vector<tile> tiles = {
 
