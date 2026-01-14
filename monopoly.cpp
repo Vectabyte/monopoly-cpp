@@ -261,7 +261,6 @@ void displayGameBoard(){
         // Place owned / houses
         size_t posStatus = board.find(placeholderOwned);
         if (posStatus != std::string::npos) {
-            std::cout<<"Tile: "<<t.tileName<<" OwnerId: "<<t.ownerId<<" UpgradeStage: "<<t.upgradeStage<<std::endl;
             if (t.ownerId == -1) {
                 ownedStatus = "     ";
             } else {
@@ -365,31 +364,29 @@ void arrest(player &p, bool &ok){
     std::cout<<"You have been arrested! 😡"<<std::endl;
 }
 
-void visualDice(int &x){
+std::string visualDice(int &x){
     switch (x) {
         case 1:{
-            std::cout<<"⚀ 1 ";
-            break;
+            return "⚀ 1 ";
         }case 2:{
-            std::cout<<"⚁ 2 ";
-            break;
+            return "⚁ 2 ";
         }case 3:{
-            std::cout<<"⚂ 3 ";
-            break;
+            return "⚂ 3 ";
         }case 4:{
-            std::cout<<"⚃ 4 ";
-            break;
+            return "⚃ 4 ";
         }case 5:{
-            std::cout<<"⚄ 5 ";
-            break;
+            return "⚄ 5 ";
         }case 6:{
-            std::cout<<"⚅ 6 ";
-            break;
+            return "⚅ 6 ";
+        } default:{
+            return "Invalid Dice Value";
         }
     }
 }
 
 void transferMoney(player &from, player &to, int amount){
+    // implement bancruptcy logic
+    // implement logic to handle transfer from/to bank/free parking?
     from.money = from.money - amount;
     to.money = to.money + amount;
 }
@@ -413,23 +410,53 @@ void drawCard(std::string type, player& player) {
         card& currentCard = communityCards[communityCardCounter];
     }
 
+    /*
+    {"advance", "Advance to Go (Collect $400)", {{"amount","400"},{"position","0"}}},
+        {"jailFree", "Get Out of Jail Free", {}},
+        {"jail", "Go to Jail. Go directly to jail, do not pass Go, do not collect $200", {}},
+        {"pay", "Doctor’s fee. Pay $50", {{"amount","50"}}},
+        {"pay", "Pay hospital fees of $100", {{"amount","100"}}},
+        {"pay", "Pay school fees of $50", {{"amount","50"}}},
+        {"repairTax", "You are assessed for street repair: $40 per house; $115 per hotel", {{"perHouse","40"},{"perHotel","115"}}},
+        {"receiveFromPlayers", "It is your birthday. Collect $10 from every player", {{"amount","10"}}},
+    */
     
-    if (currentCard.action == "receive") {
+    if (currentCard.action == "receive") { //done
         player.money += std::stoi(currentCard.value["amount"]);
+    } else if (currentCard.action == "pay") {
+        player.money -= std::stoi(currentCard.value["amount"]);
+    } else if (currentCard.action == "move") {
+        player.currentPosition = std::stoi(currentCard.value["position"]);
+    } else if (currentCard.action == "jailFree") { //done
+        player.jailFreeCard += 1;
+    } else if (currentCard.action == "goToJail") {
+        player.jailed = true;
+    } else if (currentCard.action == "collectFromPlayers") {
+        int totalAmount = 0;
+        for (const auto &p : players) {
+            if (p.playerId != player.playerId) {
+                totalAmount += std::stoi(currentCard.value["amount"]);
+            }
+        }
+        player.money += totalAmount;
+    } else if (currentCard.action == "payPlayers") {
+        int totalAmount = 0;
+        for (const auto &p : players) {
+            if (p.playerId != player.playerId) {
+                totalAmount += std::stoi(currentCard.value["amount"]);
+            }
+        }
+        player.money -= totalAmount;
     }
 }
 
-void movePlayer(int &x, int &y, player &p, bool &ok){
-    int s = x+y;
+void movePlayer(int s, player &p, bool &ok, std::string message){
     if(p.currentPosition+s > 40){
         p.money = p.money + 200;
     }
     p.currentPosition = (p.currentPosition+s)%40;
     displayGameBoard();
-    visualDice(x);
-    std::cout<<"+ ";
-    visualDice(y);
-    std::cout<<std::endl;
+    std::cout<<message<<std::endl;
     switch (p.currentPosition){
         case 0:{ //Tiletyp: GO
             p.money = p.money + 200;
@@ -476,7 +503,7 @@ void movePlayer(int &x, int &y, player &p, bool &ok){
                     bool correct = false;
                     while(!correct){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR 
-                        << "Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << " ?"<<std::endl;
+                        << " Turn!, Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << " ?"<<std::endl;
                         std::cout<<"------------------\n"
                         <<"| 1: YES | "
                         <<"0: NO |\n"
@@ -545,13 +572,13 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
     if (p.jailFreeCard > 0) {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
         <<"What do you want to do? \n"
-        <<"-------------------------------------------------------------------\n"
+        <<"----------------------------------------------------------------------------------------------------\n"
         <<"| 1 = Roll the dices | "
         <<"2 = Buy you out (50$) | "
         <<"3 = Play a get out of jail card | "
         <<"0 = End your turn | "
         <<"77 = Quit the whole game early |\n"
-        <<"-------------------------------------------------------------------"
+        <<"----------------------------------------------------------------------------------------------------"
         <<std::endl;
     } else {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
@@ -583,7 +610,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
                         p.jailed = false;
                         p.jailCounter = 0;
                         diceRolls++;
-                        movePlayer(x,y,p,ok);
+                        movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
                     }else{
                         displayGameBoard();
                         visualDice(x);
@@ -595,7 +622,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
                     p.jailCounter = 0;
                     p.money = p.money - 50;
                     diceRolls++;
-                    movePlayer(x,y, p,ok);
+                    movePlayer(x+y, p,ok,visualDice(x)+"+ "+visualDice(y));
                     std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
                 }
             }else{
@@ -611,7 +638,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             p.jailCounter = 0;
             p.money = p.money - 50;
             diceRolls++;
-            movePlayer(x,y,p,ok);
+            movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
         }case 3:{
@@ -622,7 +649,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             p.jailed = false;
             p.jailCounter = 0;
             diceRolls++;
-            movePlayer(x,y,p,ok);
+            movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
         }case 77:{
@@ -631,6 +658,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             sel = -1;
             displayGameBoard();
             std::cout<<"No Valid Input! 😡"<<std::endl;
+            clearInputBuffer();
             return false;
         }
     }
@@ -662,7 +690,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
                 diceRolls++;
                 int x = rollDice();
                 int y = rollDice();
-                movePlayer(x,y,p,ok);
+                movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
                 if(diceRolls == 3 && checkPasch(x,y)){
                     arrest(p, ok);
                     sel = 0;
@@ -694,6 +722,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             sel = -1;
             displayGameBoard();
             std::cout<<"No Valid Input! 😡"<<std::endl;
+            clearInputBuffer();
             return false;
         }
     }
