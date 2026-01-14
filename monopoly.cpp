@@ -769,29 +769,32 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             }
             return false;
         }case 2:{
+            displayGameBoard();
             std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", welcome to the financial menue\n"<<"You have " <<p.money<<"$ in your account.\n"
             <<"What do you want to do? \n"
             <<"--------------------------------------------------------------\n"
             <<"| 1 = mortgage your cards | "
             <<"2 = unmortgage your cards | "
-            <<"0 = go back |"
+            <<"0 = go back |\n"
             <<"--------------------------------------------------------------"
             <<std::endl;
             std::cin>>sel;
             switch (sel) {
                 case 1:{
-
+                    break;
                 }
                 case 2:{
-                    
+                    break;
                 }
                 case 0:{
                     displayGameBoard();
                     std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+                    break;
                 }
                 default:{
                     displayGameBoard();
                     std::cout<<"No valid input! 😡"<<std::endl;
+                    break;
                 }
             }
             return false;
