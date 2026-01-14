@@ -541,7 +541,7 @@ void movePlayer(int &x, int &y, player &p, bool &ok){
     }
 }
 
-bool jailedaction(int &sel, player &p, int &count, bool &ok){
+bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
     if (p.jailFreeCard > 0) {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
         <<"What do you want to do? \n"
@@ -582,7 +582,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
                     if(checkPasch(x, y)){
                         p.jailed = false;
                         p.jailCounter = 0;
-                        count++;
+                        diceRolls++;
                         movePlayer(x,y,p,ok);
                     }else{
                         displayGameBoard();
@@ -594,7 +594,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
                     p.jailed = false;
                     p.jailCounter = 0;
                     p.money = p.money - 50;
-                    count++;
+                    diceRolls++;
                     movePlayer(x,y, p,ok);
                     std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
                 }
@@ -610,7 +610,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
             p.jailed = false;
             p.jailCounter = 0;
             p.money = p.money - 50;
-            count++;
+            diceRolls++;
             movePlayer(x,y,p,ok);
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
@@ -621,7 +621,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
             ok = true;
             p.jailed = false;
             p.jailCounter = 0;
-            count++;
+            diceRolls++;
             movePlayer(x,y,p,ok);
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
@@ -637,7 +637,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
 }
 
 //Main function for the GameLoop, with a selection for the possible actions in Monopoly
-bool normalaction(int &sel, player &p, int &count, bool &ok){
+bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
     <<"--------------------------------------------------------------------------------------------------------------------------------------------\n"
@@ -658,12 +658,12 @@ bool normalaction(int &sel, player &p, int &count, bool &ok){
             }
             return ok;
         }case 1:{
-            if(!count || !ok){
-                count++;
+            if(!diceRolls || !ok){
+                diceRolls++;
                 int x = rollDice();
                 int y = rollDice();
                 movePlayer(x,y,p,ok);
-                if(count == 3 && checkPasch(x,y)){
+                if(diceRolls == 3 && checkPasch(x,y)){
                     arrest(p, ok);
                     sel = 0;
                     return true;
@@ -718,17 +718,17 @@ int main(){
         for(player &currentPlayer : players){
             bool control = false;
             bool rolled = false;
-            int count = 0;
+            int diceRolls = 0;
             do{
                 if(!currentPlayer.jailed){
-                    control = normalaction(sel,currentPlayer,count,rolled);
+                    control = normalaction(sel,currentPlayer,diceRolls,rolled);
                     if(sel == 77){
                         break;
                     }else if(!control){
                         sel = -1;
                     }
                 }else{
-                    control = jailedaction(sel,currentPlayer,count,rolled);
+                    control = jailedaction(sel,currentPlayer,diceRolls,rolled);
                     if(sel == 77){
                         break;
                     }else if(!control){
