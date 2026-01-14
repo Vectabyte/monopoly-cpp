@@ -14,10 +14,10 @@ std::vector<card> initializeChanceCards() {
     // Initialize Gameboard with all tiles
     std::vector<card> chanceCards = {
         {"move", "Advance to Boardwalk", {{"position", "39"}}},
-        {"move", "Take a trip to Reading Railroad. If you pass Go, collect $200", {{"postion","5"}}},
-        {"move", "Advance to Go (Collect $400)", {{"postion", "0"}}},
-        {"move", "Advance to Illinois Avenue. If you pass Go, collect $200", {{"postion","24"}}},
-        {"move", "Advance to St. Charles Place. If you pass Go, collect $200", {{"postion","11"}}},
+        {"move", "Take a trip to Reading Railroad. If you pass Go, collect $200", {{"position","5"}}},
+        {"move", "Advance to Go (Collect $400)", {{"position", "0"}}},
+        {"move", "Advance to Illinois Avenue. If you pass Go, collect $200", {{"position","24"}}},
+        {"move", "Advance to St. Charles Place. If you pass Go, collect $200", {{"position","11"}}},
         {"moveNearest", "Advance to the nearest Railroad. If unowned, you may buy it from the Bank. If owned, pay twice the rental", {{"destination","railroad"}}},
         {"moveNearest", "Advance to the nearest Railroad. If unowned, you may buy it from the Bank. If owned, pay twice the rental", {{"destination","railroad"}}},
         {"moveNearest", "Advance token to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times amount thrown", {{"destination","utility"}}},

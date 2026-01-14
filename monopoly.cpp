@@ -88,6 +88,7 @@ std::vector<card> chanceCards;
 int freeParkingFunds = 0;
 int communityCardCounter = 0;
 int chanceCardCounter = 0;
+void movePlayer(int s, player &p, bool &ok, std::string message);
 
 int calculateUtilityRent(int utilitiesOwned, int diceRoll)
 {
@@ -397,97 +398,108 @@ void transferMoney(player &from, player &to, int amount){
 }
 
 void drawCard(std::string type, player& player, bool& ok) {
-    card currentCard;
+    card* currentCard = nullptr;
 
     // Get current Card, shuffle if every card was used once
     if (type == "chance") {
         if (chanceCardCounter == chanceCards.size()) {
             chanceCardCounter = 0;
-            random_shuffle(chanceCards.begin(), chanceCards.end());
+            std::random_shuffle(chanceCards.begin(), chanceCards.end());
         }
-        card& currentCard = chanceCards[chanceCardCounter];
-        chanceCardCounter++;
-    } else if (type == "community") {
+        currentCard = &chanceCards[chanceCardCounter++];
+    } 
+    else if (type == "community") {
         if (communityCardCounter == communityCards.size()) {
             communityCardCounter = 0;
-            random_shuffle(communityCards.begin(), communityCards.end());
+            std::random_shuffle(communityCards.begin(), communityCards.end());
         }
-        card& currentCard = communityCards[communityCardCounter];
+        currentCard = &communityCards[communityCardCounter++];
     }
 
-    /*
-        {"repairTax", "You are assessed for street repair: $40 per house; $115 per hotel", {{"perHouse","40"},{"perHotel","115"}}},
-,
-        {"repairTax", "Make general repairs on all your property: For each house pay $25; For each hotel pay $100", {{"perHouse","25"},{"perHotel","100"}}},
-    */
-    
-    if (currentCard.action == "receive") {
-        player.money += std::stoi(currentCard.value["amount"]);
-    } else if (currentCard.action == "pay") {
-        deductMoney(player, std::stoi(currentCard.value["amount"]));
-    } else if (currentCard.action == "move") {
-        if (currentCard.value["position"] == "-3") {
-            movePlayer(std::stoi(currentCard.value["position"]), player, ok, "You moved 3 spaces back!");
-        } else {
-            movePlayer((std::stoi(currentCard.value["position"]) - player.currentPosition + 40) % 40, player, ok, "You moved to position " + gameBoard[std::stoi(currentCard.value["position"])].tileName + "!");
+    if (!currentCard) {
+        throw std::runtime_error("No card drawn!");
+    }
+
+    std::cout << "You drew a card: " << currentCard->text << std::endl;
+
+    if (currentCard->action == "receive") {
+        player.money += std::stoi(currentCard->value.at("amount"));
+    } 
+    else if (currentCard->action == "pay") {
+        deductMoney(player, std::stoi(currentCard->value.at("amount")));
+    } 
+    else if (currentCard->action == "move") {
+        if (currentCard->value.at("position") == "-3") {
+            movePlayer(std::stoi(currentCard->value.at("position")), player, ok, "You moved 3 spaces back!");
+        } 
+        else {
+            movePlayer(
+                (std::stoi(currentCard->value.at("position")) - player.currentPosition + 40) % 40, 
+                player, 
+                ok, 
+                "You moved to position " + gameBoard[std::stoi(currentCard->value.at("position"))].tileName + "!"
+            );
         }
-    } else if (currentCard.action == "jailFree") {
+    } 
+    else if (currentCard->action == "jailFree") {
         player.jailFreeCard += 1;
-    } else if (currentCard.action == "jail") {
+    } 
+    else if (currentCard->action == "jail") {
         arrest(player, ok);
-    } else if (currentCard.action == "receiveFromPlayers") {
+    } 
+    else if (currentCard->action == "receiveFromPlayers") {
         int totalAmount = 0;
         for (auto &p : players) {
             if (p.playerId != player.playerId) {
-                totalAmount += std::stoi(currentCard.value["amount"]);
-                deductMoney(p, std::stoi(currentCard.value["amount"]));
+                int amt = std::stoi(currentCard->value.at("amount"));
+                totalAmount += amt;
+                deductMoney(p, amt);
             }
         }
         player.money += totalAmount;
-    } else if (currentCard.action == "payEach") {
+    } 
+    else if (currentCard->action == "payEach") {
         int totalAmount = 0;
         for (auto &p : players) {
             if (p.playerId != player.playerId) {
-                totalAmount += std::stoi(currentCard.value["amount"]);
-                p.money += std::stoi(currentCard.value["amount"]);
+                int amt = std::stoi(currentCard->value.at("amount"));
+                totalAmount += amt;
+                p.money += amt;
             }
         }
         deductMoney(player, totalAmount);
-    } else if (currentCard.action == "moveNearest") {
-        if (currentCard.value["destination"] == "railroad") {
+    } 
+    else if (currentCard->action == "moveNearest") {
+        if (currentCard->value.at("destination") == "railroad") {
             int distances[] = {5, 15, 25, 35};
             int minDistance = 40;
             for (int d : distances) {
                 int distance = (d - player.currentPosition + 40) % 40;
-                if (distance < minDistance) {
-                    minDistance = distance;
-                }
+                if (distance < minDistance) minDistance = distance;
             }
             movePlayer(minDistance, player, ok, "You moved to the nearest Railroad!");
-        } else if (currentCard.value["destination"] == "utility") {
+        } 
+        else if (currentCard->value.at("destination") == "utility") {
             int distances[] = {12, 28};
             int minDistance = 40;
             for (int d : distances) {
                 int distance = (d - player.currentPosition + 40) % 40;
-                if (distance < minDistance) {
-                    minDistance = distance;
-                }
+                if (distance < minDistance) minDistance = distance;
             }
             movePlayer(minDistance, player, ok, "You moved to the nearest Utility!");
         }
-    } else if (currentCard.action == "repairTax") {
+    } 
+    else if (currentCard->action == "repairTax") {
         int totalHouses = 0;
         int totalHotels = 0;
         for (const auto& t : gameBoard) {
             if (t.ownerId == player.playerId) {
-                if (t.upgradeStage >= 1 && t.upgradeStage <= 4) {
-                    totalHouses += t.upgradeStage;
-                } else if (t.upgradeStage == 5) {
-                    totalHotels += 1;
-                }
+                if (t.upgradeStage >= 1 && t.upgradeStage <= 4) totalHouses += t.upgradeStage;
+                else if (t.upgradeStage == 5) totalHotels += 1;
             }
         }
-        int amountDue = (totalHouses * std::stoi(currentCard.value["perHouse"])) + (totalHotels * std::stoi(currentCard.value["perHotel"]));
+        int amountDue = (totalHouses * std::stoi(currentCard->value.at("perHouse"))) + 
+                        (totalHotels * std::stoi(currentCard->value.at("perHotel")));
         deductMoney(player, amountDue);
     }
 }
@@ -501,7 +513,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
     std::cout<<message<<std::endl;
     switch (p.currentPosition){
         case 0:{ //Tiletyp: GO
-            p.money = p.money + 200;
+            p.money = p.money + 400;
             break;
         }case 2:{ //Tiletyp: Com Chest
             drawCard("community", p, ok);
