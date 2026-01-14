@@ -542,15 +542,28 @@ void movePlayer(int &x, int &y, player &p, bool &ok){
 }
 
 bool jailedaction(int &sel, player &p, int &count, bool &ok){
-    std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
-    <<"What do you want to do? \n"
-    <<"-------------------------------------------------------------------\n"
-    <<"| 1 = Roll the dices | "
-    <<"2 = Buy you out (50$) | "
-    <<"0 = End your turn | "
-    <<"77 = Quit the whole game early |\n"
-    <<"-------------------------------------------------------------------"
-    <<std::endl;
+    if (p.jailFreeCard > 0) {
+        std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
+        <<"What do you want to do? \n"
+        <<"-------------------------------------------------------------------\n"
+        <<"| 1 = Roll the dices | "
+        <<"2 = Buy you out (50$) | "
+        <<"3 = Play a get out of jail card | "
+        <<"0 = End your turn | "
+        <<"77 = Quit the whole game early |\n"
+        <<"-------------------------------------------------------------------"
+        <<std::endl;
+    } else {
+        std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
+        <<"What do you want to do? \n"
+        <<"-------------------------------------------------------------------\n"
+        <<"| 1 = Roll the dices | "
+        <<"2 = Buy you out (50$) | "
+        <<"0 = End your turn | "
+        <<"77 = Quit the whole game early |\n"
+        <<"-------------------------------------------------------------------"
+        <<std::endl;
+    }
     std::cin>>sel;
     switch (sel) {
         case 0:{
@@ -564,11 +577,11 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
                 int x = rollDice();
                 int y = rollDice();
                 ok = true;
-                if(p.jailcounter < 3){
-                    p.jailcounter++;
+                if(p.jailCounter < 3){
+                    p.jailCounter++;
                     if(checkPasch(x, y)){
                         p.jailed = false;
-                        p.jailcounter = 0;
+                        p.jailCounter = 0;
                         count++;
                         movePlayer(x,y,p,ok);
                     }else{
@@ -579,7 +592,7 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
                     }
                 }else{
                     p.jailed = false;
-                    p.jailcounter = 0;
+                    p.jailCounter = 0;
                     p.money = p.money - 50;
                     count++;
                     movePlayer(x,y, p,ok);
@@ -595,8 +608,19 @@ bool jailedaction(int &sel, player &p, int &count, bool &ok){
             int y = rollDice();
             ok = true;
             p.jailed = false;
-            p.jailcounter = 0;
+            p.jailCounter = 0;
             p.money = p.money - 50;
+            count++;
+            movePlayer(x,y,p,ok);
+            std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
+            return false;
+        }case 3:{
+            p.jailFreeCard--;
+            int x = rollDice();
+            int y = rollDice();
+            ok = true;
+            p.jailed = false;
+            p.jailCounter = 0;
             count++;
             movePlayer(x,y,p,ok);
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
