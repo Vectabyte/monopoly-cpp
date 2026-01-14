@@ -138,7 +138,12 @@ int calculatePropertyRent(const tile& t, bool monopoly)
 }
 
 void deductMoney(player& player, int amount) {
-    //# implement this
+    if (player.money >= amount) {
+        player.money -= amount;
+        return;
+    }
+    std::cout << player.name << " does not have enough money! Current balance: $" << player.money << ", required: $" << amount << std::endl;
+    // TODO: Implement property selling or mortgage logic here
 }
 
 void displayGameBoard(){
@@ -393,7 +398,7 @@ std::string visualDice(int &x){
 void transferMoney(player &from, player &to, int amount){
     // implement bancruptcy logic
     // implement logic to handle transfer from/to bank/free parking?
-    from.money = from.money - amount;
+    deductMoney(from, amount);
     to.money = to.money + amount;
 }
 
@@ -520,7 +525,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             break;
         }
         case 4:{ //Tiletyp: Income Tax
-            p.money = p.money - 200;
+            deductMoney(p, 200);
             break;
         }case 7:{ //Tiletyp: Chance
             drawCard("chance", p, ok);
@@ -548,7 +553,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             drawCard("chance", p, ok);
             break;
         }case 38:{ //Tiletyp: Luxury Tax
-            p.money = p.money - 100;
+            deductMoney(p, 100);
             break;
         }default:{ //Tiletyp: Streets, Trainstations, Facilities
             tile& currentfield = gameBoard[p.currentPosition];
@@ -567,7 +572,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                         std::cin>>sel;
                         switch (sel) {
                             case 1:{
-                                p.money = p.money - currentfield.buyPrice;
+                                deductMoney(p, currentfield.buyPrice);
                                 currentfield.ownerId = p.playerId;
                                 displayGameBoard();
                                 correct = true;
@@ -674,7 +679,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
                 }else{
                     p.jailed = false;
                     p.jailCounter = 0;
-                    p.money = p.money - 50;
+                    deductMoney(p, 50);
                     diceRolls++;
                     movePlayer(x+y, p,ok,visualDice(x)+"+ "+visualDice(y));
                     std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
@@ -690,7 +695,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             ok = true;
             p.jailed = false;
             p.jailCounter = 0;
-            p.money = p.money - 50;
+            deductMoney(p, 50);
             diceRolls++;
             movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
