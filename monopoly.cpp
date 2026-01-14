@@ -136,6 +136,10 @@ int calculatePropertyRent(const tile& t, bool monopoly)
     }
 }
 
+void deductMoney(player& player, int amount) {
+    //# implement this
+}
+
 void displayGameBoard(){
     clearTerminal();
 
@@ -359,6 +363,7 @@ bool checkPasch(int &x, int &y){
 
 void arrest(player &p, bool &ok){
     p.jailed = true;
+    p.currentPosition = 10; //Jail Position
     ok = true;
     displayGameBoard();
     std::cout<<"You have been arrested! 😡"<<std::endl;
@@ -391,7 +396,7 @@ void transferMoney(player &from, player &to, int amount){
     to.money = to.money + amount;
 }
 
-void drawCard(std::string type, player& player) {
+void drawCard(std::string type, player& player, bool& ok) {
     card currentCard;
 
     // Get current Card, shuffle if every card was used once
@@ -411,42 +416,79 @@ void drawCard(std::string type, player& player) {
     }
 
     /*
-    {"advance", "Advance to Go (Collect $400)", {{"amount","400"},{"position","0"}}},
-        {"jailFree", "Get Out of Jail Free", {}},
-        {"jail", "Go to Jail. Go directly to jail, do not pass Go, do not collect $200", {}},
-        {"pay", "Doctor’s fee. Pay $50", {{"amount","50"}}},
-        {"pay", "Pay hospital fees of $100", {{"amount","100"}}},
-        {"pay", "Pay school fees of $50", {{"amount","50"}}},
         {"repairTax", "You are assessed for street repair: $40 per house; $115 per hotel", {{"perHouse","40"},{"perHotel","115"}}},
-        {"receiveFromPlayers", "It is your birthday. Collect $10 from every player", {{"amount","10"}}},
+,
+        {"repairTax", "Make general repairs on all your property: For each house pay $25; For each hotel pay $100", {{"perHouse","25"},{"perHotel","100"}}},
     */
     
-    if (currentCard.action == "receive") { //done
+    if (currentCard.action == "receive") {
         player.money += std::stoi(currentCard.value["amount"]);
     } else if (currentCard.action == "pay") {
-        player.money -= std::stoi(currentCard.value["amount"]);
+        deductMoney(player, std::stoi(currentCard.value["amount"]));
     } else if (currentCard.action == "move") {
-        player.currentPosition = std::stoi(currentCard.value["position"]);
-    } else if (currentCard.action == "jailFree") { //done
+        if (currentCard.value["position"] == "-3") {
+            movePlayer(std::stoi(currentCard.value["position"]), player, ok, "You moved 3 spaces back!");
+        } else {
+            movePlayer((std::stoi(currentCard.value["position"]) - player.currentPosition + 40) % 40, player, ok, "You moved to position " + gameBoard[std::stoi(currentCard.value["position"])].tileName + "!");
+        }
+    } else if (currentCard.action == "jailFree") {
         player.jailFreeCard += 1;
-    } else if (currentCard.action == "goToJail") {
-        player.jailed = true;
-    } else if (currentCard.action == "collectFromPlayers") {
+    } else if (currentCard.action == "jail") {
+        arrest(player, ok);
+    } else if (currentCard.action == "receiveFromPlayers") {
         int totalAmount = 0;
-        for (const auto &p : players) {
+        for (auto &p : players) {
             if (p.playerId != player.playerId) {
                 totalAmount += std::stoi(currentCard.value["amount"]);
+                deductMoney(p, std::stoi(currentCard.value["amount"]));
             }
         }
         player.money += totalAmount;
-    } else if (currentCard.action == "payPlayers") {
+    } else if (currentCard.action == "payEach") {
         int totalAmount = 0;
-        for (const auto &p : players) {
+        for (auto &p : players) {
             if (p.playerId != player.playerId) {
                 totalAmount += std::stoi(currentCard.value["amount"]);
+                p.money += std::stoi(currentCard.value["amount"]);
             }
         }
-        player.money -= totalAmount;
+        deductMoney(player, totalAmount);
+    } else if (currentCard.action == "moveNearest") {
+        if (currentCard.value["destination"] == "railroad") {
+            int distances[] = {5, 15, 25, 35};
+            int minDistance = 40;
+            for (int d : distances) {
+                int distance = (d - player.currentPosition + 40) % 40;
+                if (distance < minDistance) {
+                    minDistance = distance;
+                }
+            }
+            movePlayer(minDistance, player, ok, "You moved to the nearest Railroad!");
+        } else if (currentCard.value["destination"] == "utility") {
+            int distances[] = {12, 28};
+            int minDistance = 40;
+            for (int d : distances) {
+                int distance = (d - player.currentPosition + 40) % 40;
+                if (distance < minDistance) {
+                    minDistance = distance;
+                }
+            }
+            movePlayer(minDistance, player, ok, "You moved to the nearest Utility!");
+        }
+    } else if (currentCard.action == "repairTax") {
+        int totalHouses = 0;
+        int totalHotels = 0;
+        for (const auto& t : gameBoard) {
+            if (t.ownerId == player.playerId) {
+                if (t.upgradeStage >= 1 && t.upgradeStage <= 4) {
+                    totalHouses += t.upgradeStage;
+                } else if (t.upgradeStage == 5) {
+                    totalHotels += 1;
+                }
+            }
+        }
+        int amountDue = (totalHouses * std::stoi(currentCard.value["perHouse"])) + (totalHotels * std::stoi(currentCard.value["perHotel"]));
+        deductMoney(player, amountDue);
     }
 }
 
@@ -462,36 +504,36 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             p.money = p.money + 200;
             break;
         }case 2:{ //Tiletyp: Com Chest
-            drawCard("community", p);
+            drawCard("community", p, ok);
             break;
         }
         case 4:{ //Tiletyp: Income Tax
             p.money = p.money - 200;
             break;
         }case 7:{ //Tiletyp: Chance
-            drawCard("chance", p);
+            drawCard("chance", p, ok);
             break;
         }case 10:{ //Tiletyp: visit Jail
             break;
         }
         case 17:{ //Tiletyp: Com Chest
-            drawCard("community", p);
+            drawCard("community", p, ok);
             break;
         }case 20:{ //Tiletyp: FreeParking
             p.money = p.money + freeParkingFunds;
             freeParkingFunds = 0;
             break;
         }case 22:{ //Tiletyp: Chance
-            drawCard("chance", p);
+            drawCard("chance", p, ok);
             break;
         }case 30:{ //Tiletyp: GoToJail
             arrest(p,ok);
             break;
         }case 33:{ //Tiletyp: Com Chest
-            drawCard("community", p);
+            drawCard("community", p, ok);
             break;
         }case 36:{ //Tiletyp: Chance
-            drawCard("chance", p);
+            drawCard("chance", p, ok);
             break;
         }case 38:{ //Tiletyp: Luxury Tax
             p.money = p.money - 100;
