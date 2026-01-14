@@ -587,7 +587,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                                 break;
                             }default:{
                                 displayGameBoard();
-                                std::cout<<"No Valid Input! 😡"<<std::endl;
+                                std::cout<<"No valid input! 😡"<<std::endl;
                             }
                         }
                     }
@@ -657,7 +657,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
         case 0:{
             displayGameBoard();
             if(!ok){
-                std::cout<<"You havn't rolled enough dice! 😡"<<std::endl;
+                std::cout<<"You haven't rolled enough dice! 😡"<<std::endl;
             }
             return ok;
         }case 1:{
@@ -718,7 +718,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
         }default:{
             sel = -1;
             displayGameBoard();
-            std::cout<<"No Valid Input! 😡"<<std::endl;
+            std::cout<<"No valid input! 😡"<<std::endl;
             clearInputBuffer();
             return false;
         }
@@ -743,7 +743,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
         case 0:{
             displayGameBoard();
             if(!ok){
-                std::cout<<"You havn't rolled enough dice! 😡"<<std::endl;
+                std::cout<<"You haven't rolled enough dice! 😡"<<std::endl;
             }
             return ok;
         }case 1:{
@@ -769,7 +769,31 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             }
             return false;
         }case 2:{
-            #
+            std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", welcome to the financial menue\n"<<"You have " <<p.money<<"$ in your account.\n"
+            <<"What do you want to do? \n"
+            <<"--------------------------------------------------------------\n"
+            <<"| 1 = mortgage your cards | "
+            <<"2 = unmortgage your cards | "
+            <<"0 = go back |"
+            <<"--------------------------------------------------------------"
+            <<std::endl;
+            std::cin>>sel;
+            switch (sel) {
+                case 1:{
+
+                }
+                case 2:{
+                    
+                }
+                case 0:{
+                    displayGameBoard();
+                    std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+                }
+                default:{
+                    displayGameBoard();
+                    std::cout<<"No valid input! 😡"<<std::endl;
+                }
+            }
             return false;
         }case 3:{
             #
@@ -782,7 +806,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
         }default:{
             sel = -1;
             displayGameBoard();
-            std::cout<<"No Valid Input! 😡"<<std::endl;
+            std::cout<<"No valid input! 😡"<<std::endl;
             clearInputBuffer();
             return false;
         }
