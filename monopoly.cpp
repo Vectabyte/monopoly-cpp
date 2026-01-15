@@ -600,19 +600,38 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             }else{
                 displayGameBoard();
                 int payload;
-                switch (currentfield.upgradeStage){
-                    case 1:{
-                        payload = currentfield.price1;
-                    }case 2:{
-                        payload = currentfield.price2;
-                    }case 3:{
-                        payload = currentfield.price3;
-                    }case 4:{
-                        payload = currentfield.price4;
-                    }case 5:{
-                        payload = currentfield.price5;
-                    }default:{
-                        payload = currentfield.price0;
+                if (currentfield.tileIndex == 12 || currentfield.tileIndex == 28) { // Utility
+                    int utilitiesOwned = 0;
+                    for (const auto& t : gameBoard) {
+                        if (t.ownerId == currentfield.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
+                            utilitiesOwned++;
+                        }
+                    }
+                    payload = calculateUtilityRent(utilitiesOwned, s);
+                } else if (currentfield.tileIndex == 5 || currentfield.tileIndex == 15 || currentfield.tileIndex == 25 || currentfield.tileIndex == 35) { // Railroad
+                    int railroadsOwned = 0;
+                    for (const auto& t : gameBoard) {
+                        if (t.ownerId == currentfield.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
+                            railroadsOwned++;
+                        }
+                    }
+                    payload = calculateRailroadRent(railroadsOwned);
+
+                } else {
+                    switch (currentfield.upgradeStage){
+                        case 1:{
+                            payload = currentfield.price1;
+                        }case 2:{
+                            payload = currentfield.price2;
+                        }case 3:{
+                            payload = currentfield.price3;
+                        }case 4:{
+                            payload = currentfield.price4;
+                        }case 5:{
+                            payload = currentfield.price5;
+                        }default:{
+                            payload = currentfield.price0;
+                        }
                     }
                 }
                 bool bankrupt = false;
