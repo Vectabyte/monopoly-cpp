@@ -596,6 +596,9 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             drawCard("chance", p, ok);
             break;
         }case 30:{ //Tiletyp: GoToJail
+            std::cout << "You have come to the wroong neighbourhood my friend! Now the coppers will get you and take you to Jail!\nPress enter to continue..." << std::endl;
+            std::cin.get();
+            clearInputBuffer();
             arrest(p,ok);
             break;
         }case 33:{ //Tiletyp: Com Chest
@@ -643,13 +646,11 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                         }
                     }
                 }else{
-                    displayGameBoard();
                     std::cout<<"Not enough Money. 😢"<<std::endl;
                 }
             }else if (players[currentfield.ownerId].playerId == p.playerId) { // own property
                 std::cout<< "Lucky, you landed on your own tile 🍀" <<std::endl;
             }else{ // pay rent
-                displayGameBoard();
                 int rentPayment;
                 if (currentfield.tileIndex == 12 || currentfield.tileIndex == 28) { // Utility
                     rentPayment = calculateUtilityRent(currentfield, s);
@@ -914,6 +915,9 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
                 int y = rollDice();
                 movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
                 if(diceRolls == 3 && checkPasch(x,y)){
+                    std::cout << "You have rolled too many doubles, now you have to go to jail!\nPress enter to continue..." << std::endl;
+                    std::cin.get();
+                    clearInputBuffer();
                     arrest(p, ok);
                     sel = 0;
                     return true;
