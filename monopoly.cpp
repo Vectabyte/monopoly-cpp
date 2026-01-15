@@ -825,7 +825,9 @@ bool financial_menue(player &p){
                         break;
                     }
                 }while(sel != 99);
-                displayGameBoard();
+                if(sel ==99){
+                    displayGameBoard();
+                }
             }else{
                 displayGameBoard();
                 std::cout<<"You are homeless! 🏚"<<std::endl;
@@ -861,7 +863,9 @@ bool financial_menue(player &p){
                         break;
                     }
                 }while(sel != 99);
-                displayGameBoard();
+                if(sel ==99){
+                    displayGameBoard();
+                }
             }else{
                 displayGameBoard();
                 std::cout<<"You are homeless! 🏚"<<std::endl;
