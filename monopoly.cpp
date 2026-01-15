@@ -756,7 +756,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             p.jailCounter = 0;
             diceRolls++;
             movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
-            std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
+            std::cout<< "FREEDOM is FREE? 😫" <<std::endl;
             return false;
         }case 77:{
             return true;
@@ -768,6 +768,103 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             return false;
         }
     }
+}
+
+bool financial_menue(player &p){
+    int sel;
+    displayGameBoard();
+    std::vector<tile> filteredTileListPlayer;
+    std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the financial menue\n"<<"You have " <<p.money<<"$ in your account.\n"
+    <<"What do you want to do? \n"
+    <<"--------------------------------------------------------------\n"
+    <<"| 1 = mortgage your cards | "
+    <<"2 = unmortgage your cards | "
+    <<"0 = go back |\n"
+    <<"--------------------------------------------------------------"
+    <<std::endl;
+    std::cin>>sel;
+    switch (sel) {
+        case 1:{
+            if(!p.ownedStreets.empty()){
+                for(int i : p.ownedStreets){
+                    if(!gameBoard[i].isMortgaged){
+                        filteredTileListPlayer.push_back(gameBoard[i]);
+                    }
+                }
+                do{
+                    displayGameBoard();
+                    if(!filteredTileListPlayer.empty()){
+                        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can mortgage:" <<std::endl;
+                        int i = 0;
+                        for(tile t : filteredTileListPlayer){
+                            i++;
+                            std::cout<< i << " | " << t.tileName <<std::endl;
+                        }
+                        std::cout<< "99 | Finished in this menue" <<std::endl;
+                        std::cout<<"Wich do you choose?"<<std::endl;
+                        std::cin>>sel;
+                        if(sel !=99){
+                            p.money += (0.5*filteredTileListPlayer[sel].buyPrice);
+
+                            filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
+                        }
+                    }else{
+                        std::cout<<"All your cards are mortgaged! 🏚"<<std::endl;
+                        break;
+                    }
+                }while(sel != 99);
+            }else{
+                displayGameBoard();
+                std::cout<<"You are homeless! 🏚"<<std::endl;
+            }
+            break;
+        }
+        case 2:{
+            if(p.ownedStreets.size()){
+                for(int t : p.ownedStreets){
+                    if(gameBoard[t].isMortgaged){
+                        filteredTileListPlayer.push_back(gameBoard[t]);
+                    }
+                }
+                do{
+                    displayGameBoard();
+                    if(!filteredTileListPlayer.empty()){
+                        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can unmortgage:" <<std::endl;
+                        int i = 0;
+                        for(tile t : filteredTileListPlayer){
+                            std::cout<< "| " << i << " | " << t.tileName << " |" <<std::endl;
+                        }
+                        std::cout<< "99 | Finished in this menue" <<std::endl;
+                        std::cout<<"Wich do you choose?"<<std::endl;
+                        std::cin>>sel;
+                        if(sel !=99){
+                            deductMoney(p, (0.55*filteredTileListPlayer[sel].buyPrice));
+
+                            filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
+                        }
+                    }else{
+                        std::cout<<"All your cards are unmortgaged! 🏠"<<std::endl;
+                        break;
+                    }
+                }while(sel != 99);
+            }else{
+                displayGameBoard();
+                std::cout<<"You are homeless! 🏚"<<std::endl;
+            }
+            break;
+        }
+        case 0:{
+            displayGameBoard();
+            std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+            break;
+        }
+        default:{
+            displayGameBoard();
+            std::cout<<"No valid input! 😡"<<std::endl;
+            break;
+        }
+    }
+    return false;
 }
 
 // Main function for the GameLoop, with a selection for the possible actions in Monopoly
@@ -784,8 +881,8 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     <<"--------------------------------------------------------------------------------------------------------------------------------------------"
     <<std::endl;
     std::cin>>sel;
-    switch (sel) {
-        case 0:{
+    switch (sel) { //Main action
+        case 0:{ //
             displayGameBoard();
             if(!ok){
                 std::cout<<"You haven't rolled enough dice! 😡"<<std::endl;
@@ -814,78 +911,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             }
             return false;
         }case 2:{
-            displayGameBoard();
-            std::vector<tile> filteredTileListPlayer;
-            std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the financial menue\n"<<"You have " <<p.money<<"$ in your account.\n"
-            <<"What do you want to do? \n"
-            <<"--------------------------------------------------------------\n"
-            <<"| 1 = mortgage your cards | "
-            <<"2 = unmortgage your cards | "
-            <<"0 = go back |\n"
-            <<"--------------------------------------------------------------"
-            <<std::endl;
-            std::cin>>sel;
-            switch (sel) {
-                case 1:{
-                    if(!p.ownedStreets.empty()){
-                        for(int i : p.ownedStreets){
-                            if(!gameBoard[i].isMortgaged){
-                                filteredTileListPlayer.push_back(gameBoard[i]);
-                            }
-                        }
-                        displayGameBoard();
-                        if(!filteredTileListPlayer.empty()){
-                            std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can mortgage:" <<std::endl;
-                            int i = 0;
-                            for(tile t : filteredTileListPlayer){
-                                std::cout<< "| " << i << " | " << t.tileName << " |" <<std::endl;
-                            }
-                        }else{
-                            std::cout<<"All your cards are mortgaged! 🏚"<<std::endl;
-                        }
-                    }else{
-                        displayGameBoard();
-                        std::cout<<"You are homeless! 🏚"<<std::endl;
-                    }
-                    #
-                    break;
-                }
-                case 2:{
-                    if(p.ownedStreets.size()){
-                        for(int t : p.ownedStreets){
-                            if(gameBoard[t].isMortgaged){
-                                filteredTileListPlayer.push_back(gameBoard[t]);
-                            }
-                        }
-                        displayGameBoard();
-                        if(!filteredTileListPlayer.empty()){
-                            std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can unmortgage:" <<std::endl;
-                            int i = 0;
-                            for(tile t : filteredTileListPlayer){
-                                std::cout<< "| " << i << " | " << t.tileName << " |" <<std::endl;
-                            }
-                        }else{
-                            std::cout<<"All your cards are unmortgaged! 🏠"<<std::endl;
-                        }
-                    }else{
-                        displayGameBoard();
-                        std::cout<<"You are homeless! 🏚"<<std::endl;
-                    }
-                    #
-                    break;
-                }
-                case 0:{
-                    displayGameBoard();
-                    std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
-                    break;
-                }
-                default:{
-                    displayGameBoard();
-                    std::cout<<"No valid input! 😡"<<std::endl;
-                    break;
-                }
-            }
-            return false;
+            return financial_menue(p);
         }case 3:{
             #
             return false;
