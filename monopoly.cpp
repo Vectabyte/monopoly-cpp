@@ -90,62 +90,6 @@ int communityCardCounter = 0;
 int chanceCardCounter = 0;
 void movePlayer(int s, player &p, bool &ok, std::string message);
 
-int calculateUtilityRent(int utilitiesOwned, int diceRoll)
-{
-    if (utilitiesOwned == 1)
-        return diceRoll * 4;
-    if (utilitiesOwned == 2)
-        return diceRoll * 10;
-    return 0;
-}
-
-bool ownsMonopoly(const std::vector<tile>& board,
-                  ColorGroup color,
-                  int playerId)
-{
-    for (const auto& t : board) {
-        if (t.color == color && (t.ownerId == -1)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-int calculateRailroadRent(int railroadsOwned)
-{
-    switch (railroadsOwned) {
-        case 1: return 25;
-        case 2: return 50;
-        case 3: return 100;
-        case 4: return 200;
-        default: return 0;
-    }
-}
-
-int calculatePropertyRent(const tile& t, bool monopoly)
-{
-    if (t.upgradeStage == 0)
-        return monopoly ? t.price0 * 2 : t.price0;
-
-    switch (t.upgradeStage) {
-        case 1: return t.price1;
-        case 2: return t.price2;
-        case 3: return t.price3;
-        case 4: return t.price4;
-        case 5: return t.price5; // hotel
-        default: return 0;
-    }
-}
-
-void deductMoney(player& player, int amount) {
-    if (player.money >= amount) {
-        player.money -= amount;
-        return;
-    }
-    std::cout << player.name << " does not have enough money! Current balance: $" << player.money << ", required: $" << amount << std::endl;
-    // TODO: Implement property selling or mortgage logic here
-}
-
 void displayGameBoard(){
     clearTerminal();
 
@@ -268,7 +212,7 @@ void displayGameBoard(){
         std::string placeholderOwned = "[O" + std::string(t.tileIndex < 10 ? "0" : "") + std::to_string(t.tileIndex) + "]";
         std::string ownedStatus;
 
-        // Place owned / houses
+        // Place owned / houses / hotel status
         size_t posStatus = board.find(placeholderOwned);
         if (posStatus != std::string::npos) {
             if (t.ownerId == -1) {
@@ -351,6 +295,78 @@ void displayGameBoard(){
 10 -> Jail or no jail 
 */
 
+// calculate rent for utilities based on rolled dice value and owned utilities
+int calculateUtilityRent(tile& currentTile, int diceRoll)
+{
+    int utilitiesOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
+            utilitiesOwned++;
+        }
+    }
+    if (utilitiesOwned == 1)
+        return diceRoll * 4;
+    if (utilitiesOwned == 2)
+        return diceRoll * 10;
+    return 0;
+}
+
+// calculate rent for railroads based on number of owned railroads
+int calculateRailroadRent(tile& currentTile)
+{
+    int railroadsOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
+            railroadsOwned++;
+        }
+    }
+    switch (railroadsOwned) {
+        case 1: return 25;
+        case 2: return 50;
+        case 3: return 100;
+        case 4: return 200;
+        default: return 0;
+    }
+}
+
+// check if player owns all properties in the color group
+bool ownsMonopoly(tile& currentTile)
+{
+    for (const auto& t : gameBoard) {
+        if (t.color == currentTile.color && t.ownerId != currentTile.ownerId) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// calculate rent for properties based on upgrade stage and monopoly status
+int calculatePropertyRent(tile& t)
+{
+    if (t.upgradeStage == 0)
+        return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
+
+    switch (t.upgradeStage) {
+        case 1: return t.price1;
+        case 2: return t.price2;
+        case 3: return t.price3;
+        case 4: return t.price4;
+        case 5: return t.price5; // hotel
+        default: return 0;
+    }
+}
+
+// deduct money from player, handle insufficient funds
+void deductMoney(player& player, int amount) {
+    if (player.money >= amount) {
+        player.money -= amount;
+        return;
+    }
+    std::cout << player.name << " does not have enough money! Current balance: $" << player.money << ", required: $" << amount << std::endl;
+    // TODO: Implement property selling or mortgage logic here
+}
+
+// roll two six-sided dice
 int rollDice(){
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -359,6 +375,7 @@ int rollDice(){
     return dis(gen);
 }
 
+// check if both dice have the same value
 bool checkPasch(int &x, int &y){
     if(x != y){
         return false;
@@ -367,6 +384,7 @@ bool checkPasch(int &x, int &y){
     }
 }
 
+// arrest player and move to jail
 void arrest(player &p, bool &ok){
     p.jailed = true;
     p.currentPosition = 10; //Jail Position
@@ -375,6 +393,7 @@ void arrest(player &p, bool &ok){
     std::cout<<"You have been arrested! 😡"<<std::endl;
 }
 
+// visual representation of dice roll for output in the Terminal
 std::string visualDice(int &x){
     switch (x) {
         case 1:{
@@ -395,6 +414,7 @@ std::string visualDice(int &x){
     }
 }
 
+// transfer money between players
 void transferMoney(player &from, player &to, int amount){
     // implement bancruptcy logic
     // implement logic to handle transfer from/to bank/free parking?
@@ -402,10 +422,11 @@ void transferMoney(player &from, player &to, int amount){
     to.money = to.money + amount;
 }
 
+// draw a card from the specified deck and apply its effects
 void drawCard(std::string type, player& player, bool& ok) {
     card* currentCard = nullptr;
 
-    // Get current Card, shuffle if every card was used once
+    // Get current Card, shuffle if every card was used once, tracked per deck
     if (type == "chance") {
         if (chanceCardCounter == chanceCards.size()) {
             chanceCardCounter = 0;
@@ -421,20 +442,27 @@ void drawCard(std::string type, player& player, bool& ok) {
         currentCard = &communityCards[communityCardCounter++];
     }
 
+    // Safety check to see if a card was drawn, crashes program since not handled by design
     if (!currentCard) {
         throw std::runtime_error("No card drawn!");
     }
 
+    // Display drawn card
     std::cout << "You drew a " << type << " card: " << currentCard->text << ".\nPress enter to continue..." << std::endl;
     std::cin.get();
     clearInputBuffer();
 
+    // Apply card effects
+    // receive money from bank
     if (currentCard->action == "receive") {
         player.money += std::stoi(currentCard->value.at("amount"));
     } 
+    // pay money to bank
     else if (currentCard->action == "pay") {
         deductMoney(player, std::stoi(currentCard->value.at("amount")));
+        freeParkingFunds += std::stoi(currentCard->value.at("amount"));
     } 
+    // move player to specified position
     else if (currentCard->action == "move") {
         if (currentCard->value.at("position") == "-3") {
             movePlayer(std::stoi(currentCard->value.at("position")), player, ok, "You moved 3 spaces back!");
@@ -448,12 +476,15 @@ void drawCard(std::string type, player& player, bool& ok) {
             );
         }
     } 
+    // give player a Get Out of Jail Free card
     else if (currentCard->action == "jailFree") {
         player.jailFreeCard += 1;
     } 
+    // send player to jail
     else if (currentCard->action == "jail") {
         arrest(player, ok);
     } 
+    // receive money from all other players
     else if (currentCard->action == "receiveFromPlayers") {
         int totalAmount = 0;
         for (auto &p : players) {
@@ -465,17 +496,26 @@ void drawCard(std::string type, player& player, bool& ok) {
         }
         player.money += totalAmount;
     } 
+    // pay money to all other players
     else if (currentCard->action == "payEach") {
         int totalAmount = 0;
         for (auto &p : players) {
             if (p.playerId != player.playerId) {
                 int amt = std::stoi(currentCard->value.at("amount"));
                 totalAmount += amt;
-                p.money += amt;
             }
         }
         deductMoney(player, totalAmount);
+
+        // duplicate loop to avoid money transfer before deduction and possible bankruptcy
+        for (auto &p : players) {
+            if (p.playerId != player.playerId) {
+                int amt = std::stoi(currentCard->value.at("amount"));
+                p.money += amt;
+            }
+        }
     } 
+    // move to nearest utility or railroad
     else if (currentCard->action == "moveNearest") {
         if (currentCard->value.at("destination") == "railroad") {
             int distances[] = {5, 15, 25, 35};
@@ -496,6 +536,7 @@ void drawCard(std::string type, player& player, bool& ok) {
             movePlayer(minDistance, player, ok, "You moved to the nearest Utility!");
         }
     } 
+    // pay for repairs based on owned properties
     else if (currentCard->action == "repairTax") {
         int totalHouses = 0;
         int totalHotels = 0;
@@ -508,9 +549,11 @@ void drawCard(std::string type, player& player, bool& ok) {
         int amountDue = (totalHouses * std::stoi(currentCard->value.at("perHouse"))) + 
                         (totalHotels * std::stoi(currentCard->value.at("perHotel")));
         deductMoney(player, amountDue);
+        freeParkingFunds += amountDue;
     }
 }
 
+// move player by s spaces and handle landing on different tile types
 void movePlayer(int s, player &p, bool &ok, std::string message){
     if(p.currentPosition+s > 40){
         p.money = p.money + 200;
@@ -559,7 +602,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             break;
         }default:{ //Tiletyp: Streets, Trainstations, Facilities
             tile& currentfield = gameBoard[p.currentPosition];
-            if( currentfield.ownerId == -1){
+            if( currentfield.ownerId == -1){ // unowned property
                 if(p.money >= currentfield.buyPrice){
                     bool correct = false;
                     while(!correct){
@@ -595,26 +638,20 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                     displayGameBoard();
                     std::cout<<"Not enough Money. 😢"<<std::endl;
                 }
-            }else if (players[currentfield.ownerId].playerId == p.playerId) {
+            }else if (players[currentfield.ownerId].playerId == p.playerId) { // own property
                 std::cout<< "Lucky, you landed on your own tile 🍀" <<std::endl;
-            }else{
+            }else{ // pay rent
                 displayGameBoard();
                 int payload;
-                switch (currentfield.upgradeStage){
-                    case 1:{
-                        payload = currentfield.price1;
-                    }case 2:{
-                        payload = currentfield.price2;
-                    }case 3:{
-                        payload = currentfield.price3;
-                    }case 4:{
-                        payload = currentfield.price4;
-                    }case 5:{
-                        payload = currentfield.price5;
-                    }default:{
-                        payload = currentfield.price0;
-                    }
+                if (currentfield.tileIndex == 12 || currentfield.tileIndex == 28) { // Utility
+                    payload = calculateUtilityRent(currentfield, s);
+                } else if (currentfield.tileIndex == 5 || currentfield.tileIndex == 15 || currentfield.tileIndex == 25 || currentfield.tileIndex == 35) { // Railroad
+                    payload = calculateRailroadRent(currentfield);
+
+                } else { // Property
+                    payload = calculatePropertyRent(currentfield);
                 }
+                // bankruptcy check - possibly move to transfer money or deduct money function?
                 bool bankrupt = false;
                 if(p.money<payload){
                     #
@@ -629,6 +666,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
     }
 }
 
+// Main function for the GameLoop when the player is in Jail, with a selection for the possible actions in Monopoly
 bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
     if (p.jailFreeCard > 0) {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
@@ -703,6 +741,13 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
         }case 3:{
+            if (p.jailFreeCard <= 0) {
+                sel = -1;
+                displayGameBoard();
+                std::cout<<"No valid input! 😡"<<std::endl;
+                clearInputBuffer();
+                return false;
+            }
             p.jailFreeCard--;
             int x = rollDice();
             int y = rollDice();
@@ -725,7 +770,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
     }
 }
 
-//Main function for the GameLoop, with a selection for the possible actions in Monopoly
+// Main function for the GameLoop, with a selection for the possible actions in Monopoly
 bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
@@ -859,6 +904,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     }
 }
 
+// Main function to initialize and run the Monopoly game loop
 int main(){
     // Initialize Gameboard
     gameBoard = initializeGameBoard();
