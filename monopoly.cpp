@@ -481,10 +481,17 @@ void drawCard(std::string type, player& player, bool& ok) {
             if (p.playerId != player.playerId) {
                 int amt = std::stoi(currentCard->value.at("amount"));
                 totalAmount += amt;
-                p.money += amt;
             }
         }
         deductMoney(player, totalAmount);
+
+        // duplicate loop to avoid money transfer before deduction and possible bankruptcy
+        for (auto &p : players) {
+            if (p.playerId != player.playerId) {
+                int amt = std::stoi(currentCard->value.at("amount"));
+                p.money += amt;
+            }
+        }
     } 
     else if (currentCard->action == "moveNearest") {
         if (currentCard->value.at("destination") == "railroad") {

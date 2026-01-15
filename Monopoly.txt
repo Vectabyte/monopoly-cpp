@@ -40,5 +40,5 @@ GoToJail implementation / done
 rent payments -> Bankcruptcy check
 Bankcruptcy (low)
 implement payment method to validate cash and handle Bankcruptcy
-implement railroad, utility and monopoly handling.
+implement railroad, utility and monopoly handling. / done
 implement deductMoney
