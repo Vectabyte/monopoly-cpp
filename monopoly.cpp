@@ -661,6 +661,10 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                     #
                 }
                 if(!bankrupt){
+                    if (rentPayment == 0) {
+                        std::cout << "No rent due as the property is mortgaged. 🏚️" << std::endl;
+                        break;
+                    }
                     transferMoney(p, players[currentfield.ownerId], rentPayment);
                     std::cout<<"You had to pay " << rentPayment << " to " << players[currentfield.ownerId].name << " 💵" <<std::endl;
                 }
