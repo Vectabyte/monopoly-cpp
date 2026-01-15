@@ -24,6 +24,12 @@ typedef struct tile {
     ColorGroup color;
     std::string tileName;
     std::string shortName;
+
+    // Overload operator< to sort by Index
+    bool operator<(const tile& other) const {
+        return tileIndex < other.tileIndex;
+    }
+
 } tile;
 
 std::vector<tile> initializeGameBoard() {

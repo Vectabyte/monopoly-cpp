@@ -911,7 +911,7 @@ bool financial_menue(player &p){
 }
 
 bool building_menue(player &p){
-     int sel;
+    int sel;
     displayGameBoard();
     std::vector<tile> filteredTileListPlayer;
     std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the building menue\n"<<"You have " <<p.money<<"$ in your account.\n"
