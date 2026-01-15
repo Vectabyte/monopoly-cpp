@@ -741,6 +741,13 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
         }case 3:{
+            if (p.jailFreeCard <= 0) {
+                sel = -1;
+                displayGameBoard();
+                std::cout<<"No valid input! 😡"<<std::endl;
+                clearInputBuffer();
+                return false;
+            }
             p.jailFreeCard--;
             int x = rollDice();
             int y = rollDice();
