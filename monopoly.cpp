@@ -795,7 +795,7 @@ bool financial_menue(player &p){
         case 1:{
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
-                    if(!gameBoard[i].isMortgaged){
+                    if(!gameBoard[i].isMortgaged && gameBoard[i].upgradeStage == 0){
                         filteredTileListPlayer.push_back(gameBoard[i]);
                     }
                 }
@@ -805,15 +805,15 @@ bool financial_menue(player &p){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can mortgage:" <<std::endl;
                         int i = 0;
                         for(tile t : filteredTileListPlayer){
-                            i++;
                             std::cout<< i << " | " << t.tileName <<std::endl;
+                            i++;
                         }
                         std::cout<< "99 | Finished in this menue" <<std::endl;
                         std::cout<<"Wich do you choose?"<<std::endl;
                         std::cin>>sel;
                         if(sel !=99){
                             p.money += (0.5*filteredTileListPlayer[sel].buyPrice);
-
+                            gameBoard[filteredTileListPlayer[sel].tileIndex].isMortgaged = true;
                             filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
                         }
                     }else{
@@ -821,6 +821,7 @@ bool financial_menue(player &p){
                         break;
                     }
                 }while(sel != 99);
+                displayGameBoard();
             }else{
                 displayGameBoard();
                 std::cout<<"You are homeless! 🏚"<<std::endl;
@@ -841,13 +842,14 @@ bool financial_menue(player &p){
                         int i = 0;
                         for(tile t : filteredTileListPlayer){
                             std::cout<< "| " << i << " | " << t.tileName << " |" <<std::endl;
+                            i++;
                         }
                         std::cout<< "99 | Finished in this menue" <<std::endl;
                         std::cout<<"Wich do you choose?"<<std::endl;
                         std::cin>>sel;
                         if(sel !=99){
                             deductMoney(p, (0.55*filteredTileListPlayer[sel].buyPrice));
-
+                            gameBoard[filteredTileListPlayer[sel].tileIndex].isMortgaged = false;
                             filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
                         }
                     }else{
@@ -855,6 +857,7 @@ bool financial_menue(player &p){
                         break;
                     }
                 }while(sel != 99);
+                displayGameBoard();
             }else{
                 displayGameBoard();
                 std::cout<<"You are homeless! 🏚"<<std::endl;
