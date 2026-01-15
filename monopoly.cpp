@@ -405,17 +405,23 @@ std::string visualDice(int &x){
     switch (x) {
         case 1:{
             return "⚀ 1 ";
-        }case 2:{
+        }
+        case 2:{
             return "⚁ 2 ";
-        }case 3:{
+        }
+        case 3:{
             return "⚂ 3 ";
-        }case 4:{
+        }
+        case 4:{
             return "⚃ 4 ";
-        }case 5:{
+        }
+        case 5:{
             return "⚄ 5 ";
-        }case 6:{
+        }
+        case 6:{
             return "⚅ 6 ";
-        } default:{
+        }
+        default:{
             return "Invalid Dice Value";
         }
     }
@@ -572,45 +578,55 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
         case 0:{ //Tiletyp: GO
             p.money = p.money + 400;
             break;
-        }case 2:{ //Tiletyp: Com Chest
+        }
+        case 2:{ //Tiletyp: Com Chest
             drawCard("community", p, ok);
             break;
         }
         case 4:{ //Tiletyp: Income Tax
             deductMoney(p, 200);
             break;
-        }case 7:{ //Tiletyp: Chance
+        }
+        case 7:{ //Tiletyp: Chance
             drawCard("chance", p, ok);
             break;
-        }case 10:{ //Tiletyp: visit Jail
+        }
+        case 10:{ //Tiletyp: visit Jail
             break;
         }
         case 17:{ //Tiletyp: Com Chest
             drawCard("community", p, ok);
             break;
-        }case 20:{ //Tiletyp: FreeParking
+        }
+        case 20:{ //Tiletyp: FreeParking
             p.money = p.money + freeParkingFunds;
             freeParkingFunds = 0;
             break;
-        }case 22:{ //Tiletyp: Chance
+        }
+        case 22:{ //Tiletyp: Chance
             drawCard("chance", p, ok);
             break;
-        }case 30:{ //Tiletyp: GoToJail
+        }
+        case 30:{ //Tiletyp: GoToJail
             std::cout << "You have come to the wroong neighbourhood my friend! Now the coppers will get you and take you to Jail!\nPress enter to continue..." << std::endl;
             std::cin.get();
             clearInputBuffer();
             arrest(p,ok);
             break;
-        }case 33:{ //Tiletyp: Com Chest
+        }
+        case 33:{ //Tiletyp: Com Chest
             drawCard("community", p, ok);
             break;
-        }case 36:{ //Tiletyp: Chance
+        }
+        case 36:{ //Tiletyp: Chance
             drawCard("chance", p, ok);
             break;
-        }case 38:{ //Tiletyp: Luxury Tax
+        }
+        case 38:{ //Tiletyp: Luxury Tax
             deductMoney(p, 100);
             break;
-        }default:{ //Tiletyp: Streets, Trainstations, Facilities
+        }
+        default:{ //Tiletyp: Streets, Trainstations, Facilities
             tile& currentfield = gameBoard[p.currentPosition];
             if( currentfield.ownerId == -1){ // unowned property
                 if(p.money >= currentfield.buyPrice){
@@ -634,12 +650,14 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                                 correct = true;
                                 std::cout<<"Bravo you have succesfully puchased "<< currentfield.tileName <<"! 🥳" <<std::endl;
                                 break;
-                            }case 0:{
+                            }
+                            case 0:{
                                 displayGameBoard();
                                 std::cout<<"Why tho? 🤨 "<<std::endl;
                                 correct = true;
                                 break;
-                            }default:{
+                            }
+                            default:{
                                 displayGameBoard();
                                 std::cout<<"No valid input! 😡"<<std::endl;
                             }
@@ -711,7 +729,8 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
                 std::cout<<"You haven't rolled enough dice! 😡"<<std::endl;
             }
             return ok;
-        }case 1:{
+        }
+        case 1:{
             if(!ok){
                 int x = rollDice();
                 int y = rollDice();
@@ -742,7 +761,8 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
                 std::cout<<"You have already rolled enough dice! 😡"<<std::endl;
             }
             return false;
-        }case 2:{
+        }
+        case 2:{
             int x = rollDice();
             int y = rollDice();
             ok = true;
@@ -753,7 +773,8 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
             std::cout<< "FREEDOM is not FREE! 🦅" <<std::endl;
             return false;
-        }case 3:{
+        }
+        case 3:{
             if (p.jailFreeCard <= 0) {
                 sel = -1;
                 displayGameBoard();
@@ -771,9 +792,11 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
             movePlayer(x+y,p,ok,visualDice(x)+"+ "+visualDice(y));
             std::cout<< "FREEDOM is FREE? 😫" <<std::endl;
             return false;
-        }case 77:{
+        }
+        case 77:{
             return true;
-        }default:{
+        }
+        default:{
             sel = -1;
             displayGameBoard();
             std::cout<<"No valid input! 😡"<<std::endl;
@@ -837,9 +860,9 @@ bool financial_menue(player &p){
         }
         case 2:{
             if(p.ownedStreets.size()){
-                for(int t : p.ownedStreets){
-                    if(gameBoard[t].isMortgaged){
-                        filteredTileListPlayer.push_back(gameBoard[t]);
+                for(int i : p.ownedStreets){
+                    if(gameBoard[i].isMortgaged){
+                        filteredTileListPlayer.push_back(gameBoard[i]);
                     }
                 }
                 do{
@@ -876,6 +899,124 @@ bool financial_menue(player &p){
         case 0:{
             displayGameBoard();
             std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+            break;
+        }
+        default:{
+            displayGameBoard();
+            std::cout<<"No valid input! 😡"<<std::endl;
+            break;
+        }
+    }
+    return false;
+}
+
+bool building_menue(player &p){
+     int sel;
+    displayGameBoard();
+    std::vector<tile> filteredTileListPlayer;
+    std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the building menue\n"<<"You have " <<p.money<<"$ in your account.\n"
+    <<"What do you want to do? \n"
+    <<"--------------------------------------------------------------\n"
+    <<"| 1 = buy houses | "
+    <<"2 = sell houses | "
+    <<"0 = go back |\n"
+    <<"--------------------------------------------------------------"
+    <<std::endl;
+    std::cin>>sel;
+    switch (sel) {
+        case 1:{
+            if(!p.ownedStreets.empty()){
+                for(int i : p.ownedStreets){
+                    if(ownsMonopoly(gameBoard[i])){
+                        if(gameBoard[i].upgradeStage != 5){
+                            filteredTileListPlayer.push_back(gameBoard[i]);
+                        }
+                    }
+                }
+                if(!filteredTileListPlayer.empty()){
+                    std::sort(filteredTileListPlayer.begin(),filteredTileListPlayer.end());
+                    do{
+                        displayGameBoard();
+                        if(!filteredTileListPlayer.empty()){
+                            std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can upgrade:" <<std::endl;
+                            int i = 0;
+                            for(tile t : filteredTileListPlayer){
+                                std::cout<<colorCodes[t.color].first << "| " << i << " |" <<RESET_COLOR << " " << t.tileName << " |" <<std::endl;
+                                i++;
+                            }
+                            std::cout<< "99 | Finished in this menue" <<std::endl;
+                            std::cout<<"Wich do you choose?"<<std::endl;
+                            std::cin>>sel;
+                            if(sel !=99){
+                                deductMoney(p, filteredTileListPlayer[sel].housePrice);
+                                gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage++;
+                                if(gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage == 5){
+                                    filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
+                                }
+                            }
+                        }else{
+                            std::cout<<"All your cards max upgraded! 🏠"<<std::endl;
+                            break;
+                        }
+                    }while(sel != 99);
+                    if(sel ==99){
+                        displayGameBoard();
+                    }
+                }else{
+                    displayGameBoard();
+                    std::cout<<"No monopolys! 🏚"<<std::endl;
+                }
+            }else{
+                displayGameBoard();
+                std::cout<<"You are homeless! 🏚"<<std::endl;
+            }
+            break;
+        }case 2:{
+            if(!p.ownedStreets.empty()){
+                for(int i : p.ownedStreets){
+                    if(ownsMonopoly(gameBoard[i])){
+                        if(gameBoard[i].upgradeStage != 0){
+                            filteredTileListPlayer.push_back(gameBoard[i]);
+                        }
+                    }
+                }
+                if(!filteredTileListPlayer.empty()){
+                    std::sort(filteredTileListPlayer.begin(),filteredTileListPlayer.end());
+                    do{
+                        displayGameBoard();
+                        if(!filteredTileListPlayer.empty()){
+                            std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can upgrade:" <<std::endl;
+                            int i = 0;
+                            for(tile t : filteredTileListPlayer){
+                                std::cout<<colorCodes[t.color].first << "| " << i << " |" <<RESET_COLOR << " " << t.tileName << " |" <<std::endl;
+                                i++;
+                            }
+                            std::cout<< "99 | Finished in this menue" <<std::endl;
+                            std::cout<<"Wich do you choose?"<<std::endl;
+                            std::cin>>sel;
+                            if(sel !=99){
+                                deductMoney(p, (0.5*filteredTileListPlayer[sel].housePrice));
+                                gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage--;
+                                if(gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage == 0){
+                                    filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
+                                }
+                            }
+                        }else{
+                            std::cout<<"All your cards are max downgraded! 🏚"<<std::endl;
+                            break;
+                        }
+                    }while(sel != 99);
+                    if(sel ==99){
+                        displayGameBoard();
+                    }
+                }else{
+                    displayGameBoard();
+                    std::cout<<"No monopolys! 🏚"<<std::endl;
+                }
+            }else{
+                displayGameBoard();
+                std::cout<<"You are homeless! 🏚"<<std::endl;
+            }
             break;
         }
         default:{
@@ -935,15 +1076,18 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             return false;
         }case 2:{
             return financial_menue(p);
-        }case 3:{
+        }
+        case 3:{
+            return building_menue(p);
+        }
+        case 4:{
             #
             return false;
-        }case 4:{
-            #
-            return false;
-        }case 77:{
+        }
+        case 77:{
             return true;
-        }default:{
+        }
+        default:{
             sel = -1;
             displayGameBoard();
             std::cout<<"No valid input! 😡"<<std::endl;
