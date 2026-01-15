@@ -343,6 +343,9 @@ bool ownsMonopoly(tile& currentTile)
 // calculate rent for properties based on upgrade stage and monopoly status
 int calculatePropertyRent(tile& t)
 {
+    if (t.isMortgaged) {
+        return 0;
+    }
     if (t.upgradeStage == 0)
         return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
 
