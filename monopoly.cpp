@@ -619,6 +619,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                             case 1:{
                                 deductMoney(p, currentfield.buyPrice);
                                 currentfield.ownerId = p.playerId;
+                                p.ownedStreets.push_back(currentfield.tileIndex);
                                 displayGameBoard();
                                 correct = true;
                                 std::cout<<"Bravo you have succesfully puchased "<< currentfield.tileName <<"! 🥳" <<std::endl;
