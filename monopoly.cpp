@@ -219,25 +219,29 @@ void displayGameBoard(){
                 ownedStatus = "     ";
             } else {
                 std::string color = colorCodes[players[t.ownerId].color].first;
-                switch (t.upgradeStage){
-                    case 1:
-                        ownedStatus = color + "⌂    " + RESET_COLOR;
-                        break;
-                    case 2:
-                        ownedStatus = color + "⌂⌂   " + RESET_COLOR;
-                        break;
-                    case 3:
-                        ownedStatus = color + "⌂⌂⌂  " + RESET_COLOR;
-                        break;
-                    case 4:
-                        ownedStatus = color + "⌂⌂⌂⌂ " + RESET_COLOR;
-                        break;
-                    case 5:
-                        ownedStatus = color + "HOTEL" + RESET_COLOR;
-                        break;
-                    default:
-                        ownedStatus = color + "OWNED" + RESET_COLOR;
-                        break;
+                if (t.isMortgaged) {
+                    ownedStatus = color + "MORTG" + RESET_COLOR;
+                } else {
+                    switch (t.upgradeStage){
+                        case 1:
+                            ownedStatus = color + "⌂    " + RESET_COLOR;
+                            break;
+                        case 2:
+                            ownedStatus = color + "⌂⌂   " + RESET_COLOR;
+                            break;
+                        case 3:
+                            ownedStatus = color + "⌂⌂⌂  " + RESET_COLOR;
+                            break;
+                        case 4:
+                            ownedStatus = color + "⌂⌂⌂⌂ " + RESET_COLOR;
+                            break;
+                        case 5:
+                            ownedStatus = color + "HOTEL" + RESET_COLOR;
+                            break;
+                        default:
+                            ownedStatus = color + "OWNED" + RESET_COLOR;
+                            break;
+                    }
                 }
             }
             board.replace(posStatus, 5, ownedStatus);
