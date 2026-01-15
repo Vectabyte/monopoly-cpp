@@ -90,8 +90,14 @@ int communityCardCounter = 0;
 int chanceCardCounter = 0;
 void movePlayer(int s, player &p, bool &ok, std::string message);
 
-int calculateUtilityRent(int utilitiesOwned, int diceRoll)
+int calculateUtilityRent(tile& currentTile, int diceRoll)
 {
+    int utilitiesOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
+            utilitiesOwned++;
+        }
+    }
     if (utilitiesOwned == 1)
         return diceRoll * 4;
     if (utilitiesOwned == 2)
@@ -99,20 +105,24 @@ int calculateUtilityRent(int utilitiesOwned, int diceRoll)
     return 0;
 }
 
-bool ownsMonopoly(const std::vector<tile>& board,
-                  ColorGroup color,
-                  int playerId)
+bool ownsMonopoly(tile& currentTile)
 {
-    for (const auto& t : board) {
-        if (t.color == color && (t.ownerId == -1)) {
+    for (const auto& t : gameBoard) {
+        if (t.color == currentTile.color && t.ownerId != currentTile.ownerId) {
             return false;
         }
     }
     return true;
 }
 
-int calculateRailroadRent(int railroadsOwned)
+int calculateRailroadRent(tile& currentTile)
 {
+    int railroadsOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
+            railroadsOwned++;
+        }
+    }
     switch (railroadsOwned) {
         case 1: return 25;
         case 2: return 50;
@@ -122,10 +132,10 @@ int calculateRailroadRent(int railroadsOwned)
     }
 }
 
-int calculatePropertyRent(const tile& t, bool monopoly)
+int calculatePropertyRent(tile& t)
 {
     if (t.upgradeStage == 0)
-        return monopoly ? t.price0 * 2 : t.price0;
+        return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
 
     switch (t.upgradeStage) {
         case 1: return t.price1;
@@ -601,38 +611,12 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                 displayGameBoard();
                 int payload;
                 if (currentfield.tileIndex == 12 || currentfield.tileIndex == 28) { // Utility
-                    int utilitiesOwned = 0;
-                    for (const auto& t : gameBoard) {
-                        if (t.ownerId == currentfield.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
-                            utilitiesOwned++;
-                        }
-                    }
-                    payload = calculateUtilityRent(utilitiesOwned, s);
+                    payload = calculateUtilityRent(currentfield, s);
                 } else if (currentfield.tileIndex == 5 || currentfield.tileIndex == 15 || currentfield.tileIndex == 25 || currentfield.tileIndex == 35) { // Railroad
-                    int railroadsOwned = 0;
-                    for (const auto& t : gameBoard) {
-                        if (t.ownerId == currentfield.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
-                            railroadsOwned++;
-                        }
-                    }
-                    payload = calculateRailroadRent(railroadsOwned);
+                    payload = calculateRailroadRent(currentfield);
 
                 } else {
-                    switch (currentfield.upgradeStage){
-                        case 1:{
-                            payload = currentfield.price1;
-                        }case 2:{
-                            payload = currentfield.price2;
-                        }case 3:{
-                            payload = currentfield.price3;
-                        }case 4:{
-                            payload = currentfield.price4;
-                        }case 5:{
-                            payload = currentfield.price5;
-                        }default:{
-                            payload = currentfield.price0;
-                        }
-                    }
+                    payload = calculatePropertyRent(currentfield);
                 }
                 bool bankrupt = false;
                 if(p.money<payload){
