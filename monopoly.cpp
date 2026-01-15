@@ -343,6 +343,9 @@ bool ownsMonopoly(tile& currentTile)
 // calculate rent for properties based on upgrade stage and monopoly status
 int calculatePropertyRent(tile& t)
 {
+    if (t.isMortgaged) {
+        return 0;
+    }
     if (t.upgradeStage == 0)
         return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
 
@@ -619,6 +622,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                             case 1:{
                                 deductMoney(p, currentfield.buyPrice);
                                 currentfield.ownerId = p.playerId;
+                                p.ownedStreets.push_back(currentfield.tileIndex);
                                 displayGameBoard();
                                 correct = true;
                                 std::cout<<"Bravo you have succesfully puchased "<< currentfield.tileName <<"! 🥳" <<std::endl;
@@ -642,23 +646,27 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                 std::cout<< "Lucky, you landed on your own tile 🍀" <<std::endl;
             }else{ // pay rent
                 displayGameBoard();
-                int payload;
+                int rentPayment;
                 if (currentfield.tileIndex == 12 || currentfield.tileIndex == 28) { // Utility
-                    payload = calculateUtilityRent(currentfield, s);
+                    rentPayment = calculateUtilityRent(currentfield, s);
                 } else if (currentfield.tileIndex == 5 || currentfield.tileIndex == 15 || currentfield.tileIndex == 25 || currentfield.tileIndex == 35) { // Railroad
-                    payload = calculateRailroadRent(currentfield);
+                    rentPayment = calculateRailroadRent(currentfield);
 
                 } else { // Property
-                    payload = calculatePropertyRent(currentfield);
+                    rentPayment = calculatePropertyRent(currentfield);
                 }
                 // bankruptcy check - possibly move to transfer money or deduct money function?
                 bool bankrupt = false;
-                if(p.money<payload){
+                if(p.money<rentPayment){
                     #
                 }
                 if(!bankrupt){
-                    transferMoney(p, players[currentfield.ownerId], payload);
-                    std::cout<<"You had to pay " << payload << " to " << players[currentfield.ownerId].name << " 💵" <<std::endl;
+                    if (rentPayment == 0) {
+                        std::cout << "No rent due as the property is mortgaged. 🏚️" << std::endl;
+                        break;
+                    }
+                    transferMoney(p, players[currentfield.ownerId], rentPayment);
+                    std::cout<<"You had to pay " << rentPayment << " to " << players[currentfield.ownerId].name << " 💵" <<std::endl;
                 }
             }
             break;

@@ -24,11 +24,10 @@ Expand ReadMe
 Community Chest Cards + Chance Cards / done - not implemented: move to nearest railroad (pay twice rent), move to nearest utility (pay 10 times dice roll), only move part implemented
 Overhaul of display messaged (when to say "you drew card x") maybe necessary?
 Implement jail logic (free after 3 turns) / done
-
+Buy and Sell homes (for half price)
 
 Roll dice -> display rolled values / done
 Hypothesize card + pay of hypothek (half value + 10%)
-Buy and Sell homes (for half price)
 Trade with players (low prio)
 Rearrange menu for better ui / done
 Income 200 and Luxury 100 field / done
