@@ -90,72 +90,6 @@ int communityCardCounter = 0;
 int chanceCardCounter = 0;
 void movePlayer(int s, player &p, bool &ok, std::string message);
 
-int calculateUtilityRent(tile& currentTile, int diceRoll)
-{
-    int utilitiesOwned = 0;
-    for (const auto& t : gameBoard) {
-        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
-            utilitiesOwned++;
-        }
-    }
-    if (utilitiesOwned == 1)
-        return diceRoll * 4;
-    if (utilitiesOwned == 2)
-        return diceRoll * 10;
-    return 0;
-}
-
-bool ownsMonopoly(tile& currentTile)
-{
-    for (const auto& t : gameBoard) {
-        if (t.color == currentTile.color && t.ownerId != currentTile.ownerId) {
-            return false;
-        }
-    }
-    return true;
-}
-
-int calculateRailroadRent(tile& currentTile)
-{
-    int railroadsOwned = 0;
-    for (const auto& t : gameBoard) {
-        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
-            railroadsOwned++;
-        }
-    }
-    switch (railroadsOwned) {
-        case 1: return 25;
-        case 2: return 50;
-        case 3: return 100;
-        case 4: return 200;
-        default: return 0;
-    }
-}
-
-int calculatePropertyRent(tile& t)
-{
-    if (t.upgradeStage == 0)
-        return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
-
-    switch (t.upgradeStage) {
-        case 1: return t.price1;
-        case 2: return t.price2;
-        case 3: return t.price3;
-        case 4: return t.price4;
-        case 5: return t.price5; // hotel
-        default: return 0;
-    }
-}
-
-void deductMoney(player& player, int amount) {
-    if (player.money >= amount) {
-        player.money -= amount;
-        return;
-    }
-    std::cout << player.name << " does not have enough money! Current balance: $" << player.money << ", required: $" << amount << std::endl;
-    // TODO: Implement property selling or mortgage logic here
-}
-
 void displayGameBoard(){
     clearTerminal();
 
@@ -360,6 +294,71 @@ void displayGameBoard(){
 40 % 40 = 0 -> Reset
 10 -> Jail or no jail 
 */
+int calculateUtilityRent(tile& currentTile, int diceRoll)
+{
+    int utilitiesOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 12 || t.tileIndex == 28)) {
+            utilitiesOwned++;
+        }
+    }
+    if (utilitiesOwned == 1)
+        return diceRoll * 4;
+    if (utilitiesOwned == 2)
+        return diceRoll * 10;
+    return 0;
+}
+
+bool ownsMonopoly(tile& currentTile)
+{
+    for (const auto& t : gameBoard) {
+        if (t.color == currentTile.color && t.ownerId != currentTile.ownerId) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int calculateRailroadRent(tile& currentTile)
+{
+    int railroadsOwned = 0;
+    for (const auto& t : gameBoard) {
+        if (t.ownerId == currentTile.ownerId && (t.tileIndex == 5 || t.tileIndex == 15 || t.tileIndex == 25 || t.tileIndex == 35)) {
+            railroadsOwned++;
+        }
+    }
+    switch (railroadsOwned) {
+        case 1: return 25;
+        case 2: return 50;
+        case 3: return 100;
+        case 4: return 200;
+        default: return 0;
+    }
+}
+
+int calculatePropertyRent(tile& t)
+{
+    if (t.upgradeStage == 0)
+        return ownsMonopoly(t) ? t.price0 * 2 : t.price0;
+
+    switch (t.upgradeStage) {
+        case 1: return t.price1;
+        case 2: return t.price2;
+        case 3: return t.price3;
+        case 4: return t.price4;
+        case 5: return t.price5; // hotel
+        default: return 0;
+    }
+}
+
+void deductMoney(player& player, int amount) {
+    if (player.money >= amount) {
+        player.money -= amount;
+        return;
+    }
+    std::cout << player.name << " does not have enough money! Current balance: $" << player.money << ", required: $" << amount << std::endl;
+    // TODO: Implement property selling or mortgage logic here
+}
 
 int rollDice(){
     std::random_device rd;
