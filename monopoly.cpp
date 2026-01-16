@@ -89,6 +89,7 @@ int freeParkingFunds = 0;
 int communityCardCounter = 0;
 int chanceCardCounter = 0;
 void movePlayer(int s, player &p, bool &ok, std::string message);
+void bankruptcy(player &p, int targetID, int amount);
 
 void displayGameBoard(){
     clearTerminal();
