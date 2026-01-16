@@ -995,7 +995,7 @@ bool building_menue(player &p){
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
                             if(sel !=99){
-                                deductMoney(p, (0.5*filteredTileListPlayer[sel].housePrice));
+                                p.money += (0.5*filteredTileListPlayer[sel].housePrice);
                                 gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage--;
                                 if(gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage == 0){
                                     filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
