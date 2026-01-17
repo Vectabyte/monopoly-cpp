@@ -1115,14 +1115,14 @@ bool trading_menue(player &p){
         int desicion;
         do{
             displayGameBoard();
-            std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "do you accept the trade?"
+            std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "do you accept the trade?\n"
             <<"---------------------------------\n"
             <<"| 1 = Yes | "
             <<"0 = No |\n"
             <<"---------------------------------"
             <<std::endl;
             std::cin>>desicion;
-        }while (!desicion || desicion == 1);
+        }while (desicion != 0 && desicion != 1);
         if(!desicion){
             displayGameBoard();
             std::cout<<"They didn't want your offer! 😡"<<std::endl;
