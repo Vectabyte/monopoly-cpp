@@ -1244,8 +1244,7 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
             return building_menue(p);
         }
         case 4:{
-            #
-            return false;
+            return trading_menue(p);
         }
         case 77:{
             return true;
