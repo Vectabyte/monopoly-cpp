@@ -1037,7 +1037,7 @@ bool trading_menue(player &p){
     for(player pl : players){
         if(pl.playerId != p.playerId){
             otherplayers.push_back(pl.playerId);
-            std::cout<<"| " << i << " | " << pl.name << " |";
+            std::cout<<"| " << i << " | " << pl.name << " |\n";
         }
     }
     std::cout<<"| 99 | go back |"
