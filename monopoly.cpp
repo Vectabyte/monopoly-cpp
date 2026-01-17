@@ -1056,9 +1056,9 @@ bool trading_menue(player &p){
         std::cin>>amount1;
 
         if(!p.ownedStreets.empty()){
+            int tilesel;
             do{
                 displayGameBoard();
-                int tilesel;
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : p.ownedStreets){
@@ -1071,7 +1071,7 @@ bool trading_menue(player &p){
                 if(sel !=99 && sel < p.ownedStreets.size()){
                     tiles1.push_back(p.ownedStreets[tilesel]);
                 }
-            }while(sel != 99);
+            }while(tilesel != 99);
         }else{
             displayGameBoard();
             std::cout<<"You have no cards to give\n"<<"press enter to continue..."<<std::endl;
@@ -1086,9 +1086,9 @@ bool trading_menue(player &p){
 
         displayGameBoard();
         if(!players[otherplayers[sel]].ownedStreets.empty()){
+            int tilesel;
             do{
                 displayGameBoard();
-                int tilesel;
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : players[otherplayers[sel]].ownedStreets){
@@ -1101,12 +1101,14 @@ bool trading_menue(player &p){
                 if(sel !=99 && sel < players[otherplayers[sel]].ownedStreets.size()){
                     tiles2.push_back(players[otherplayers[sel]].ownedStreets[tilesel]);
                 }
-            }while(sel != 99);
+            }while(tilesel != 99);
         }else{
             std::cout<<players[otherplayers[sel]].name << " has no cards to give\n"<<"press enter to continue..."<<std::endl;
             std::cin.get();
             clearInputBuffer();
         }
+
+        #
     }else if (sel == 99) {
         displayGameBoard();
         std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
