@@ -572,14 +572,14 @@ void drawCard(std::string type, player& player, bool& ok) {
 // move player by s spaces and handle landing on different tile types
 void movePlayer(int s, player &p, bool &ok, std::string message){
     if(p.currentPosition+s > 40){
-        p.money = p.money + 200;
+        p.money += 200;
     }
     p.currentPosition = (p.currentPosition+s)%40;
     displayGameBoard();
     std::cout<<message<<std::endl;
     switch (p.currentPosition){
         case 0:{ //Tiletyp: GO
-            p.money = p.money + 400;
+            p.money += 400;
             break;
         }
         case 2:{ //Tiletyp: Com Chest
@@ -602,7 +602,7 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
             break;
         }
         case 20:{ //Tiletyp: FreeParking
-            p.money = p.money + freeParkingFunds;
+            p.money += freeParkingFunds;
             freeParkingFunds = 0;
             break;
         }
@@ -906,7 +906,7 @@ bool financial_menue(player &p){
 bool building_menue(player &p){
     int sel;
     displayGameBoard();
-    std::vector<tile> filteredTileListPlayer;
+    std::vector<int> filteredTileListPlayer;
     std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the building menue\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
     <<"--------------------------------------------------------------\n"
@@ -922,7 +922,7 @@ bool building_menue(player &p){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
                         if(gameBoard[i].upgradeStage != 5){
-                            filteredTileListPlayer.push_back(gameBoard[i]);
+                            filteredTileListPlayer.push_back(gameBoard[i].tileIndex);
                         }
                     }
                 }
@@ -933,17 +933,17 @@ bool building_menue(player &p){
                         if(!filteredTileListPlayer.empty()){
                             std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can upgrade:" <<std::endl;
                             int i = 0;
-                            for(tile t : filteredTileListPlayer){
-                                std::cout<<colorCodes[t.color].first << "| " << i << " |" <<RESET_COLOR << " " << t.tileName << " |" <<std::endl;
+                            for(int t : filteredTileListPlayer){
+                                std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
                                 i++;
                             }
                             std::cout<< "99 | Finished in this menue" <<std::endl;
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
-                            if(sel !=99){
-                                transferMoney(p, -1, filteredTileListPlayer[sel].housePrice);
-                                gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage++;
-                                if(gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage == 5){
+                            if(sel !=99 && sel < filteredTileListPlayer.size()){
+                                transferMoney(p, -1, gameBoard[filteredTileListPlayer[sel]].housePrice);
+                                gameBoard[filteredTileListPlayer[sel]].upgradeStage++;
+                                if(gameBoard[filteredTileListPlayer[sel]].upgradeStage == 5){
                                     filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
                                 }
                             }
@@ -969,7 +969,7 @@ bool building_menue(player &p){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
                         if(gameBoard[i].upgradeStage != 0){
-                            filteredTileListPlayer.push_back(gameBoard[i]);
+                            filteredTileListPlayer.push_back(gameBoard[i].tileIndex);
                         }
                     }
                 }
@@ -980,17 +980,17 @@ bool building_menue(player &p){
                         if(!filteredTileListPlayer.empty()){
                             std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can upgrade:" <<std::endl;
                             int i = 0;
-                            for(tile t : filteredTileListPlayer){
-                                std::cout<<colorCodes[t.color].first << "| " << i << " |" <<RESET_COLOR << " " << t.tileName << " |" <<std::endl;
+                            for(int t : filteredTileListPlayer){
+                                std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
                                 i++;
                             }
                             std::cout<< "99 | Finished in this menue" <<std::endl;
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
-                            if(sel !=99){
-                                p.money += (0.5*filteredTileListPlayer[sel].housePrice);
-                                gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage--;
-                                if(gameBoard[filteredTileListPlayer[sel].tileIndex].upgradeStage == 0){
+                            if(sel !=99 && sel < filteredTileListPlayer.size()){
+                                p.money += (0.5*gameBoard[filteredTileListPlayer[sel]].housePrice);
+                                gameBoard[filteredTileListPlayer[sel]].upgradeStage--;
+                                if(gameBoard[filteredTileListPlayer[sel]].upgradeStage == 0){
                                     filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
                                 }
                             }
@@ -1011,12 +1011,108 @@ bool building_menue(player &p){
                 std::cout<<"You are homeless! 🏚"<<std::endl;
             }
             break;
+        }case 0:{
+            displayGameBoard();
+            std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+            break;
         }
         default:{
             displayGameBoard();
             std::cout<<"No valid input! 😡"<<std::endl;
             break;
         }
+    }
+    return false;
+}
+
+bool trading_menue(player &p){
+    int sel;
+    std::vector<int> otherplayers;
+    displayGameBoard();
+    std::vector<tile> filteredTileListPlayer;
+    std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the traiding menue\n"
+    <<"Whit whom you want to trade?\n"
+    <<"--------------------------------------------------------------"<<std::endl;
+    int i = 0;
+    for(player pl : players){
+        if(pl.playerId != p.playerId){
+            otherplayers.push_back(pl.playerId);
+            std::cout<<"| " << i << " | " << pl.name << " |";
+        }
+    }
+    std::cout<<"| 99 | go back |"
+    <<"\n--------------------------------------------------------------"
+    <<std::endl;
+    std::cin>>sel;
+    if(sel < otherplayers.size()){
+        int amount1;
+        int amount2;
+        std::vector<int> tiles1;
+        std::vector<int>tiles2;
+
+        displayGameBoard();
+        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR <<"You have " <<p.money<<"$ in your account.\n"
+        <<"How Much money do you want to give " << players[otherplayers[sel]].name << "?" <<std::endl;
+        std::cin>>amount1;
+
+        if(!p.ownedStreets.empty()){
+            do{
+                displayGameBoard();
+                int tilesel;
+                std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
+                int i = 0;
+                for(int t : p.ownedStreets){
+                    std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
+                    i++;
+                }
+                std::cout<< "99 | Finished in this menue" <<std::endl;
+                std::cout<<"Wich do you choose?"<<std::endl;
+                std::cin>>tilesel;
+                if(sel !=99 && sel < p.ownedStreets.size()){
+                    tiles1.push_back(p.ownedStreets[tilesel]);
+                }
+            }while(sel != 99);
+        }else{
+            displayGameBoard();
+            std::cout<<"You have no cards to give\n"<<"press enter to continue..."<<std::endl;
+            std::cin.get();
+            clearInputBuffer();
+        }
+
+        displayGameBoard();
+        std::cout<<colorCodes[players[otherplayers[sel]].color].first << p.symbol << " " << p.name << RESET_COLOR <<"has " <<p.money<<"$ in their account.\n"
+        <<"How Much money do you want from " << players[otherplayers[sel]].name << "?" <<std::endl;
+        std::cin>>amount2;
+
+        displayGameBoard();
+        if(!players[otherplayers[sel]].ownedStreets.empty()){
+            do{
+                displayGameBoard();
+                int tilesel;
+                std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
+                int i = 0;
+                for(int t : players[otherplayers[sel]].ownedStreets){
+                    std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
+                    i++;
+                }
+                std::cout<< "99 | Finished in this menue" <<std::endl;
+                std::cout<<"Wich do you choose?"<<std::endl;
+                std::cin>>tilesel;
+                if(sel !=99 && sel < players[otherplayers[sel]].ownedStreets.size()){
+                    tiles2.push_back(players[otherplayers[sel]].ownedStreets[tilesel]);
+                }
+            }while(sel != 99);
+        }else{
+            std::cout<<players[otherplayers[sel]].name << " has no cards to give\n"<<"press enter to continue..."<<std::endl;
+            std::cin.get();
+            clearInputBuffer();
+        }
+    }else if (sel == 99) {
+        displayGameBoard();
+        std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
+    }else{
+        displayGameBoard();
+        std::cout << "Invalid input! 😡" << std::endl;
     }
     return false;
 }
