@@ -418,6 +418,10 @@ std::string visualDice(int &x){
     }
 }
 
+void transferTile(player &from, int targetID, std::vector<int> tiles){
+
+}
+
 // transfer money between players
 void transferMoney(player &from, int targetID, int amount){
     // implement bancruptcy logic
@@ -1108,7 +1112,29 @@ bool trading_menue(player &p){
             clearInputBuffer();
         }
 
-        #
+        int desicion;
+        do{
+            displayGameBoard();
+            std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "do you accept the trade?"
+            <<"---------------------------------\n"
+            <<"| 1 = Yes | "
+            <<"0 = No |\n"
+            <<"---------------------------------"
+            <<std::endl;
+            std::cin>>desicion;
+        }while (!desicion || desicion == 1);
+        if(!desicion){
+            displayGameBoard();
+            std::cout<<"They didn't want your offer! 😡"<<std::endl;
+        }else{
+            transferMoney(p, otherplayers[sel], amount1);
+            transferMoney(players[otherplayers[sel]], p.playerId, amount2);
+
+            transferTile(p, otherplayers[sel], tiles1);
+            transferTile(players[otherplayers[sel]], p.playerId, tiles2);
+            displayGameBoard();
+            std::cout<<"The offer was accepted! 🥳"<<std::endl;
+        }
     }else if (sel == 99) {
         displayGameBoard();
         std::cout<<"i want to be MONKEY! 🐒"<<std::endl;
