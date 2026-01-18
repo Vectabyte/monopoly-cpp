@@ -8,6 +8,11 @@
 #include <array>
 #include <algorithm>
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
+    
 // Color groups for properties
 enum ColorGroup {
     NONE,
@@ -27,9 +32,9 @@ enum ColorGroup {
 
 // Symbols for players
 const std::vector<std::string> availableSmybols = {
-        "♠","♣","♥","♦","●","○","■","□",
-        "▲","▼","◆","◇","★","☆","✪","✦","✧","✚","✖",
-        "♜","♞","♝","♛","♚"
+        u8"♠",u8"♣",u8"♥",u8"♦",u8"●",u8"○",u8"■",u8"□",
+        u8"▲",u8"▼",u8"◆",u8"◇",u8"★",u8"☆",u8"✪",u8"✦",u8"✧",u8"✚",u8"✖",
+        u8"♜",u8"♞",u8"♝",u8"♛",u8"♚"
 };
 
 // Map display names to fully expanded ColorGroup
@@ -107,7 +112,7 @@ void displayGameBoard(){
     }
     
     //Raw Gameboard String
-    std::string board = R"(┌────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┐
+    std::string board = u8R"(┌────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┬────────────┐
 │ 20 FP      │ 21 KENTUCKY│ 22 CHANCE  │ 23 INDIANA │ 24 ILLINOIS│ 25 B&O RR  │ 26 ATLANTIC│ 27 VENTNOR │ 28 WATER   │ 29 MARVIN  │ 30 GOTOJAIL│
 │            │ [O21]      │            │ [O23]      │ [O24]      │ [O25]      │ [O26]      │ [O27]      │ [O28]      │ [O29]      │            │
 │ [20]   │ [21]   │ [22]   │ [23]   │ [24]   │ [25]   │ [26]   │ [27]   │ [28]   │ [29]   │ [30]   │
@@ -1248,6 +1253,10 @@ bool lastManStanding(){
 
 // Main function to initialize and run the Monopoly game loop
 int main(){
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+    #endif
     // Initialize Gameboard
     gameBoard = initializeGameBoard();
     chanceCards = initializeChanceCards();
@@ -1255,7 +1264,7 @@ int main(){
     players = initializePlayers();
 
     //Randomize Player Order
-    random_shuffle(players.begin(), players.end());
+    std::random_shuffle(players.begin(), players.end());
 
     //Display Gameboard
     displayGameBoard();
