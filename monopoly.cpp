@@ -788,7 +788,7 @@ bool financial_menue(player &p){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can mortgage:" <<std::endl;
                         int i = 0;
                         for(tile t : filteredTileListPlayer){
-                            std::cout<<colorCodes[t.color].first << std::string(i < 10 ? "0" : "") << i << " | " << t.tileName << RESET_COLOR <<std::endl;
+                            std::cout<<colorCodes[t.color].first << std::string(i < 10 ? "0" : "") << i << " | " << "$" << t.buyPrice*0.5 << std::string(t.buyPrice*0.5 < 100 ? " " : "") << " | " << t.tileName << RESET_COLOR <<std::endl;
                             i++;
                         }
                         std::cout<< "99 | Finished in this menue" <<std::endl;
@@ -826,7 +826,7 @@ bool financial_menue(player &p){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can unmortgage:" <<std::endl;
                         int i = 0;
                         for(tile t : filteredTileListPlayer){
-                            std::cout<<colorCodes[t.color].first << std::string(i < 10 ? "0" : "") << i << " | " << t.tileName << RESET_COLOR <<std::endl;
+                            std::cout<<colorCodes[t.color].first << std::string(i < 10 ? "0" : "") << i << " | "  << "$" << t.buyPrice*0.55 << std::string(t.buyPrice*0.55 < 100 ? " " : "") << " | "  << t.tileName << RESET_COLOR <<std::endl;
                             i++;
                         }
                         std::cout<< "99 | Finished in this menue" <<std::endl;
@@ -886,7 +886,7 @@ bool building_menue(player &p){
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
-                        if(gameBoard[i].upgradeStage != 5){
+                        if(gameBoard[i].upgradeStage != 5 && !gameBoard[i].isMortgaged && gameBoard[i].housePrice != 0){
                             filteredTileListPlayer.push_back(gameBoard[i].tileIndex);
                         }
                     }
@@ -899,7 +899,7 @@ bool building_menue(player &p){
                             std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can upgrade:" <<std::endl;
                             int i = 0;
                             for(int t : filteredTileListPlayer){
-                                std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                                std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << "$" << gameBoard[t].housePrice << std::string(gameBoard[t].housePrice < 100 ? " " : "") << " | "  << gameBoard[t].tileName << RESET_COLOR <<std::endl;
                                 i++;
                             }
                             std::cout<< "99 | Finished in this menue" <<std::endl;
@@ -938,7 +938,7 @@ bool building_menue(player &p){
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
-                        if(gameBoard[i].upgradeStage != 0){
+                        if(gameBoard[i].upgradeStage != 0 && !gameBoard[i].isMortgaged && gameBoard[i].housePrice != 0){
                             filteredTileListPlayer.push_back(gameBoard[i].tileIndex);
                         }
                     }
@@ -951,7 +951,7 @@ bool building_menue(player &p){
                             std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can downgrade:" <<std::endl;
                             int i = 0;
                             for(int t : filteredTileListPlayer){
-                                std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                                std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << "$" << gameBoard[t].housePrice*0.5 << std::string(gameBoard[t].housePrice*0.5 < 100 ? " " : "") << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
                                 i++;
                             }
                             std::cout<< "99 | Finished in this menue" <<std::endl;
