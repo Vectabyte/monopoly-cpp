@@ -1007,7 +1007,7 @@ bool trading_menue(player &p){
     for(player pl : players){
         if(pl.playerId != p.playerId){
             otherplayers.push_back(pl.playerId);
-            std::cout<< std::string(i < 10 ? "0" : "") << i << " | " << pl.name << "\n";
+            std::cout<< colorCodes[pl.color].first << std::string(i < 10 ? "0" : "") << i << " | " << pl.name << RESET_COLOR <<"\n";
             i++;
         }
     }
@@ -1114,12 +1114,12 @@ bool trading_menue(player &p){
             std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << " do you accept the trade?\n"
             <<"You give: $" <<amount2;
             for(int i : tiles2){
-                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName;
+                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName << RESET_COLOR;
             }
             std::cout<<std::endl;
             std::cout<<"You get: $"<<amount1;
             for(int i : tiles1){
-                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName;
+                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName << RESET_COLOR;
             }
             std::cout<<std::endl;
             std::cout
@@ -1127,8 +1127,10 @@ bool trading_menue(player &p){
             <<"│ 1: YES │ 0: NO  │\n"
             <<"└────────┴────────┘\n"
             <<std::endl;
+            clearInputBuffer();
             std::cin>>desicion;
-        }while (true);
+        }while (std::cin.fail() || (desicion != 0 && desicion != 1));
+        clearInputBuffer();
         if(!desicion){
             displayGameBoard();
             std::cout<<"They didn't want your offer! 😡"<<std::endl;
@@ -1320,6 +1322,10 @@ int main(){
         importFile(players);
         importFile(freeParkingFunds, index, turnOrder);
     }else{
+        if (std::cin.fail() || sel != 0) { 
+            std::cout << "Invalid Input, continuing with normal setup!" << std::endl;
+        }
+        clearInputBuffer();
         gameBoard = initializeGameBoard();
         players = initializePlayers();
         // Randomize turn order
@@ -1357,6 +1363,7 @@ int main(){
                     if (sel == 77) break;
                     if (!control) sel = -1;
                 }
+                clearInputBuffer();
             } while (sel);
         }
 
