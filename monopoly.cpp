@@ -90,6 +90,8 @@ std::vector<tile> gameBoard;
 std::vector<player> players;
 std::vector<card> communityCards;
 std::vector<card> chanceCards;
+std::random_device rd;
+std::mt19937 gen(rd());
 int freeParkingFunds = 0;
 int communityCardCounter = 0;
 int chanceCardCounter = 0;
@@ -324,8 +326,6 @@ int calculatePropertyRent(tile& t)
 
 // roll two six-sided dice
 int rollDice(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(1,6);
     
     return dis(gen);
@@ -415,14 +415,14 @@ void drawCard(std::string type, player& player, bool& ok) {
     if (type == "chance") {
         if (chanceCardCounter == chanceCards.size()) {
             chanceCardCounter = 0;
-            std::random_shuffle(chanceCards.begin(), chanceCards.end());
+            std::shuffle(chanceCards.begin(), chanceCards.end(), gen);
         }
         currentCard = &chanceCards[chanceCardCounter++];
     } 
     else if (type == "community") {
         if (communityCardCounter == communityCards.size()) {
             communityCardCounter = 0;
-            std::random_shuffle(communityCards.begin(), communityCards.end());
+            std::shuffle(communityCards.begin(), communityCards.end(), gen);
         }
         currentCard = &communityCards[communityCardCounter++];
     }
@@ -1263,8 +1263,13 @@ int main(){
     communityCards = initializeCommunityCards();
     players = initializePlayers();
 
-    //Randomize Player Order
-    std::random_shuffle(players.begin(), players.end());
+    // Randomize turn order
+    // create vector with player indices
+    std::vector<std::size_t> turnOrder(players.size());
+    // fill vector with values 0, 1, ..., players.size() - 1
+    std::iota(turnOrder.begin(), turnOrder.end(), 0);
+    // shuffle the vector
+    std::shuffle(turnOrder.begin(), turnOrder.end(), gen);
 
     //Display Gameboard
     displayGameBoard();
