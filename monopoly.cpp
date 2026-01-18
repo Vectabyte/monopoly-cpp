@@ -81,6 +81,8 @@ const std::string RESET_COLOR = "\033[0m";
 #include "player.hpp"
 #include "tile.hpp"
 #include "card.hpp"
+#include "FileExport.hpp"
+#include "FileImport.hpp"
 std::vector<tile> gameBoard;
 std::vector<player> players;
 std::vector<card> communityCards;

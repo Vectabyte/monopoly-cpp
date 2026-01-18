@@ -11,13 +11,13 @@
 #include <algorithm>
 
 typedef struct player{
+        int playerId;
+        std::string symbol;
         std::string name;
         bool jailed;
         int money;
         int currentPosition;
-        int playerId;
         std::vector<int> ownedStreets;
-        std::string symbol;
         ColorGroup color;
         int jailCounter;
         int jailFreeCard;
