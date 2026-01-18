@@ -1310,16 +1310,23 @@ bool lastManStanding(){
     return activePlayers == 1;
 }
 
+bool fileExists(const std::string& name) {
+    std::ifstream f(name);
+    return f.is_open();
+}
+
 // Main function to initialize and run the Monopoly game loop
 int main(){
     int sel;
     // Initialize Gameboard
-    std::cout<<"Do you want to load last saved game?\n"
-    <<"┌────────┬────────┐\n"
-    <<"│ 1: YES │ 0: NO  │\n"
-    <<"└────────┴────────┘\n"
-    <<std::endl;
-    std::cin>>sel;
+    if (fileExists("Tiles.csv") && fileExists("Players.csv") && fileExists("OwnedStreets.csv") && fileExists("otherData.csv")) {
+        std::cout<<"Do you want to load last saved game?\n"
+        <<"┌────────┬────────┐\n"
+        <<"│ 1: YES │ 0: NO  │\n"
+        <<"└────────┴────────┘\n"
+        <<std::endl;
+        std::cin>>sel;
+    } else { sel = 0; }
     if(sel == 1 && std::cin.good()){
         importFile(gameBoard);
         importFile(players);

@@ -40,5 +40,8 @@
 # debug information files
 *.dwo
 
+# Save Files
+*.csv
+
 # build directory
 build/
