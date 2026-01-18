@@ -508,18 +508,19 @@ void drawCard(std::string type, player& player, bool& ok) {
     else if (currentCard->action == "receiveFromPlayers") {
         int totalAmount = 0;
         for (auto &p : players) {
-            if (p.playerId != player.playerId) {
+            if (p.playerId != player.playerId && !p.bankrupt) {
                 int amt = std::stoi(currentCard->value.at("amount"));
                 totalAmount += amt;
-                transferMoney(p, player.playerId, amt);
+                transferMoney(p, -1, amt);
             }
         }
+        player.money += totalAmount;
     } 
     // pay money to all other players
     else if (currentCard->action == "payEach") {
         int totalAmount = 0;
         for (auto &p : players) {
-            if (p.playerId != player.playerId) {
+            if (p.playerId != player.playerId && !p.bankrupt) {
                 int amt = std::stoi(currentCard->value.at("amount"));
                 totalAmount += amt;
             }
@@ -1208,8 +1209,7 @@ void bankruptcy(player &p, int targetID, int amount){
         p.ownedStreets.clear();
         p.money = 0;
         std::cout << colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", you have been removed from the game. 😞" << std::endl;
-        players.erase(std::remove_if(players.begin(), players.end(),
-            [&p](const player& pl) { return pl.playerId == p.playerId; }), players.end());
+        p.bankrupt = true;
     } else {
         std::cout << "You have successfully paid off your debts!\nPress enter to continue..." << std::endl;
         std::cin.get();
@@ -1285,6 +1285,16 @@ bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     }
 }
 
+bool lastManStanding(){
+    int activePlayers = 0;
+    for (const auto& p : players) {
+        if (!p.bankrupt) {
+            activePlayers++;
+        }
+    }
+    return activePlayers == 1;
+}
+
 // Main function to initialize and run the Monopoly game loop
 int main(){
     // Initialize Gameboard
@@ -1303,6 +1313,9 @@ int main(){
     int sel;
     do{
         for(player &currentPlayer : players){
+            if(currentPlayer.bankrupt){
+                continue;
+            }
             bool control = false;
             bool rolled = false;
             int diceRolls = 0;
@@ -1327,10 +1340,14 @@ int main(){
                 break;
             }
         }
-    }while(sel != 77 && players.size() > 1);
+    }while(sel != 77 && lastManStanding() == false);
 
-    if (sel != 77 && players.size() == 1) {
-        std::cout << colorCodes[players[0].color].first << players[0].symbol << " " << players[0].name << RESET_COLOR << " is the WINNER! 🏆🎉" << std::endl;
+    if (sel != 77 && lastManStanding()) {
+        for (const auto& p : players) {
+            if (!p.bankrupt) {
+                std::cout << colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << " is the WINNER! 🏆🎉" << std::endl;
+            }
+        }
     } else {
         std::cout << "Game ended early." << std::endl;
     }

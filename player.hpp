@@ -21,6 +21,7 @@ typedef struct player{
         ColorGroup color;
         int jailCounter;
         int jailFreeCard;
+        bool bankrupt;
     } player;
 
 std::vector<player> initializePlayers() {
@@ -50,6 +51,7 @@ std::vector<player> initializePlayers() {
         p.ownedStreets = {};
         p.jailCounter = 0;
         p.jailFreeCard = 0;
+        p.bankrupt = false;
 
         // Symbol Selection
         std::cout << "\nChoose your symbol:\n";
