@@ -1105,6 +1105,17 @@ bool trading_menue(player &p){
         do{
             displayGameBoard();
             std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "do you accept the trade?\n"
+            <<"You give: $" <<amount2;
+            for(int i : tiles2){
+                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName;
+            }
+            std::cout<<std::endl;
+            std::cout<<"You get: $"<<amount1;
+            for(int i : tiles1){
+                std::cout<<", "<<colorCodes[gameBoard[i].color].first<<gameBoard[i].tileName;
+            }
+            std::cout<<std::endl;
+            std::cout
             <<"┌────────┬────────┐\n"
             <<"│ 1: YES │ 0: NO  │\n"
             <<"└────────┴────────┘\n"
