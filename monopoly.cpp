@@ -371,8 +371,15 @@ std::string visualDice(int &x){
     }
 }
 
-void transferTile(player &from, int targetID, std::vector<int> tiles){
-
+void transferTile(player &from, int targetID, std::vector<int> &tiles){
+    for(int t : tiles){
+        auto it = std::find(from.ownedStreets.begin(),from.ownedStreets.end(),t);
+        if(it != from.ownedStreets.end()){
+            from.ownedStreets.erase(it);
+        }
+        players[targetID].ownedStreets.push_back(t);
+        gameBoard[t].ownerId = targetID;
+    }
 }
 
 // transfer money between players
@@ -984,6 +991,7 @@ bool trading_menue(player &p){
         if(pl.playerId != p.playerId){
             otherplayers.push_back(pl.playerId);
             std::cout<< i << " | " << pl.name << "\n";
+            i++;
         }
     }
     std::cout<<"99 | go back\n"
@@ -1007,13 +1015,17 @@ bool trading_menue(player &p){
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : p.ownedStreets){
-                    std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                    if(std::find(tiles1.begin(),tiles1.end(),t)==tiles1.end()){
+                        std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                    }else{
+                        std::cout<< std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName <<std::endl;
+                    }
                     i++;
                 }
                 std::cout<< "99 | Finished in this menue" <<std::endl;
                 std::cout<<"Wich do you choose?"<<std::endl;
                 std::cin>>tilesel;
-                if(sel !=99 && sel < p.ownedStreets.size()){
+                if(tilesel !=99 && tilesel < p.ownedStreets.size()){
                     tiles1.push_back(p.ownedStreets[tilesel]);
                 }
             }while(tilesel != 99);
@@ -1037,13 +1049,17 @@ bool trading_menue(player &p){
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : players[otherplayers[sel]].ownedStreets){
-                    std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                    if(std::find(tiles2.begin(),tiles2.end(),t)==tiles2.end()){
+                        std::cout<<colorCodes[gameBoard[t].color].first << std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
+                    }else{
+                        std::cout<< std::string(i < 10 ? "0" : "") << i << " | " << gameBoard[t].tileName <<std::endl;
+                    }
                     i++;
                 }
                 std::cout<< "99 | Finished in this menue" <<std::endl;
                 std::cout<<"Wich do you choose?"<<std::endl;
                 std::cin>>tilesel;
-                if(sel !=99 && sel < players[otherplayers[sel]].ownedStreets.size()){
+                if(tilesel !=99 && tilesel < players[otherplayers[sel]].ownedStreets.size()){
                     tiles2.push_back(players[otherplayers[sel]].ownedStreets[tilesel]);
                 }
             }while(tilesel != 99);
