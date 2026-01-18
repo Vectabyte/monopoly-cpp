@@ -66,21 +66,6 @@ const std::vector<std::pair<std::string, ColorGroup>> colorCodes = {
     {"\033[38;2;102;0;255m", PURPLE}
 };
 
-inline ColorGroup stringColorGroupMatcher(const std::string& colorStr) {
-    if (colorStr == "brown")      return ColorGroup::BROWN;
-    if (colorStr == "blue")       return ColorGroup::BLUE;
-    if (colorStr == "pink")       return ColorGroup::PINK;
-    if (colorStr == "orange")     return ColorGroup::ORANGE;
-    if (colorStr == "red")        return ColorGroup::RED;
-    if (colorStr == "yellow")     return ColorGroup::YELLOW;
-    if (colorStr == "green")      return ColorGroup::GREEN;
-    if (colorStr == "darkblue")   return ColorGroup::DARK_BLUE;
-    if (colorStr == "gray")       return ColorGroup::GRAY;
-    if (colorStr == "purple")     return ColorGroup::PURPLE;
-
-    return ColorGroup::NONE; // safer default
-}
-
 void clearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -1327,36 +1312,34 @@ int main(){
         <<std::endl;
         std::cin>>sel;
     } else { sel = 0; }
+
+    std::vector<std::size_t> turnOrder;
+    int index;
     if(sel == 1 && std::cin.good()){
         importFile(gameBoard);
         importFile(players);
+        importFile(freeParkingFunds, index, turnOrder);
     }else{
         gameBoard = initializeGameBoard();
         players = initializePlayers();
+        // Randomize turn order
+        // create vector with player indices
+        turnOrder.resize(players.size());
+        // fill vector with values 0, 1, ..., players.size() - 1
+        std::iota(turnOrder.begin(), turnOrder.end(), 0);
+        // shuffle the vector
+        std::shuffle(turnOrder.begin(), turnOrder.end(), gen);
+        index = 0;
     }
     chanceCards = initializeChanceCards();
     communityCards = initializeCommunityCards();
-
-    // Randomize turn order
-    // create vector with player indices
-    std::vector<std::size_t> turnOrder(players.size());
-    // fill vector with values 0, 1, ..., players.size() - 1
-    std::iota(turnOrder.begin(), turnOrder.end(), 0);
-    // shuffle the vector
-    std::shuffle(turnOrder.begin(), turnOrder.end(), gen);
-
-    int index = 0;
-
-    if(sel == 1 && std::cin.good()){
-        importFile(freeParkingFunds, currentPlayerTurn, turnOrder);
-        index = currentPlayerTurn;
-    }
 
     //Display Gameboard
     displayGameBoard();
 
     do {
-        player &currentPlayer = players[index];
+        std::size_t playerIdx = turnOrder[index];
+        player &currentPlayer = players[playerIdx];
 
         // Skip bankrupt players
         if (!currentPlayer.bankrupt) {
@@ -1397,7 +1380,7 @@ int main(){
         }
     } else {
         std::cout << "Game ended early.\n" 
-        <<"Do you want to export the game state?\n"
+        <<"Do you want to export the game state? (You turn ends with this action)\n"
         <<"┌────────┬────────┐\n"
         <<"│ 1: YES │ 0: NO  │\n"
         <<"└────────┴────────┘\n"
@@ -1406,7 +1389,7 @@ int main(){
         if(sel == 1 && std::cin.good()){
             exportFile(players);
             exportFile(gameBoard);
-            exportFile(freeParkingFunds, currentPlayerTurn, turnOrder);
+            exportFile(freeParkingFunds, ((currentPlayerTurn + 1) % turnOrder.size()), turnOrder);
             std::cout<<"Exited with saving"<<std::endl;
 
         }else if(sel == 0 && std::cin.good()){
@@ -1414,7 +1397,7 @@ int main(){
         }else{
             exportFile(players);
             exportFile(gameBoard);
-            exportFile(freeParkingFunds, currentPlayerTurn, turnOrder);
+            exportFile(freeParkingFunds, ((currentPlayerTurn + 1) % turnOrder.size()), turnOrder);
             std::cout<<"Saved you :)"<<std::endl;
         }
     }

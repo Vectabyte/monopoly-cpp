@@ -28,3 +28,8 @@ cmake --build build
 ```
 
 Windows support is not available due to an utf-8 encoding issue with the player model.
+
+## Missing features
+
+There is no implementation for player vs bot since it is not easily feesible to implement with the broad decision needed to give any challange in this case.
+A pure random generator for doing actions and accessing menu's is not a good idea.

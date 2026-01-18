@@ -8,7 +8,7 @@ void exportFile(std::vector<tile>& tiles){
     std::ofstream csv ("Tiles.csv");
 
     for(tile t : tiles){
-        csv<<t.tileIndex<<";"<<t.ownerId<<";"<<t.buyable<<";"<<t.buyPrice<<";"<<t.isMortgaged<<";"<<t.housePrice<<";"<<t.upgradeStage<<";"<<t.price0<<";"<<t.price1<<";"<<t.price2<<";"<<t.price3<<";"<<t.price4<<";"<<t.price5<<";"<<t.color<<";"<<t.tileName<<";"<<t.shortName<<"\n";
+        csv<<t.tileIndex<<";"<<t.ownerId<<";"<<t.buyable<<";"<<t.buyPrice<<";"<<t.isMortgaged<<";"<<t.housePrice<<";"<<t.upgradeStage<<";"<<t.price0<<";"<<t.price1<<";"<<t.price2<<";"<<t.price3<<";"<<t.price4<<";"<<t.price5<<";"<<static_cast<int>(t.color)<<";"<<t.tileName<<";"<<t.shortName<<"\n";
     }
     csv.close();
 }
@@ -18,6 +18,7 @@ void exportFile(std::vector<player>& players){
     std::ofstream ownedStreetsFile ("OwnedStreets.csv");
 
     for(player p : players){
+        csv<<p.playerId<<";"<<p.symbol<<";"<<p.name<<";"<<p.money<<";"<<p.currentPosition<<";"<<p.jailed<<";"<<static_cast<int>(p.color)<<";"<<p.jailCounter<<";"<<p.jailFreeCard<<";"<<p.bankrupt<<"\n";
         for (int street : p.ownedStreets){
             ownedStreetsFile<<p.playerId<<";"<<street<<"\n";
         }
@@ -31,7 +32,7 @@ void exportFile(int freeParkingMoney, int currentPlayerTurn, std::vector<std::si
 
     csv<<freeParkingMoney<<"\n";
     csv<<currentPlayerTurn<<"\n";
-    for(std::size_t i : turnOrder){
+    for(int i : turnOrder){
         csv<<i<<"\n";
     }
     csv.close();

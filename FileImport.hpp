@@ -70,8 +70,9 @@ inline void importFile(std::vector<tile>& tiles)  {
         start = pos + del.length();
 
         pos = line.find(del,start);
-        std::string colorStr = line.substr(start, pos-start);
-        s.color = stringColorGroupMatcher(colorStr);
+        int colorInt;
+        colorInt = std::stoi(line.substr(start, pos-start));
+        s.color = static_cast<ColorGroup>(colorInt);
         start = pos + del.length();
 
         pos = line.find(del,start);
@@ -123,8 +124,9 @@ inline void importFile(std::vector<player>& players)  {
         start = pos + del.length();
 
         pos = line.find(del,start);
-        std::string colorStr = line.substr(start, pos-start);
-        s.color = stringColorGroupMatcher(colorStr);
+        int colorInt;
+        colorInt = std::stoi(line.substr(start, pos-start));
+        s.color = static_cast<ColorGroup>(colorInt);
         start = pos + del.length();
 
         pos = line.find(del,start);
@@ -163,7 +165,7 @@ inline void importFile(std::vector<player>& players)  {
     ownedStreetsFile.close();
 }
 
-inline void importFile(int freeParkingMoney, int currentPlayerTurn, std::vector<std::size_t>& turnOrder)  {
+inline void importFile(int& freeParkingMoney, int& currentPlayerTurn, std::vector<std::size_t>& turnOrder)  {
     std::ifstream csv;
     csv.open("otherData.csv");
     std::string line;
