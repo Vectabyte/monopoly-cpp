@@ -1006,14 +1006,14 @@ bool trading_menue(player &p){
     for(player pl : players){
         if(pl.playerId != p.playerId){
             otherplayers.push_back(pl.playerId);
-            std::cout<< i << " | " << pl.name << "\n";
+            std::cout<< std::string(i < 10 ? "0" : "") << i << " | " << pl.name << "\n";
             i++;
         }
     }
     std::cout<<"99 | go back\n"
     <<std::endl;
     std::cin>>sel;
-    if(sel < otherplayers.size()){
+    if(sel < otherplayers.size() && sel >=0 && std::cin.good()){
         int amount1;
         int amount2;
         std::vector<int> tiles1;
@@ -1024,10 +1024,12 @@ bool trading_menue(player &p){
         <<"How Much money do you want to give " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "?" <<std::endl;
         while (true){
             std::cin>>amount1;
-            if (amount1 <= p.money){
+            if (amount1 <= p.money && std::cin.good()){
                 break;
-            }else{
+            }else if(amount1 > p.money && std::cin.good()){
                 std::cout<<"You don't have enough money! 😡"<<std::endl;
+            } else {
+                std::cout<<"No valid input! 😡"<<std::endl;
                 clearInputBuffer();
             }
         }
@@ -1049,7 +1051,7 @@ bool trading_menue(player &p){
                 std::cout<< "99 | Finished in this menue" <<std::endl;
                 std::cout<<"Wich do you choose?"<<std::endl;
                 std::cin>>tilesel;
-                if(tilesel !=99 && tilesel < p.ownedStreets.size()){
+                if(tilesel !=99 && tilesel < p.ownedStreets.size() && std::cin.good() && tilesel >=0){
                     tiles1.push_back(p.ownedStreets[tilesel]);
                 }
             }while(tilesel != 99);
@@ -1065,10 +1067,12 @@ bool trading_menue(player &p){
         <<"How Much money do you want from " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR  << "?" <<std::endl;
         while (true){
             std::cin>>amount2;
-            if (amount2 <= players[otherplayers[sel]].money){
+            if (amount2 <= players[otherplayers[sel]].money && std::cin.good()){
                 break;
-            }else{
+            }else if(amount2 > players[otherplayers[sel]].money && std::cin.good()){
                 std::cout<<"You don't have enough money! 😡"<<std::endl;
+            } else {
+                std::cout<<"No valid input! 😡"<<std::endl;
                 clearInputBuffer();
             }
         }
@@ -1091,7 +1095,7 @@ bool trading_menue(player &p){
                 std::cout<< "99 | Finished in this menue" <<std::endl;
                 std::cout<<"Wich do you choose?"<<std::endl;
                 std::cin>>tilesel;
-                if(tilesel !=99 && tilesel < players[otherplayers[sel]].ownedStreets.size()){
+                if(tilesel !=99 && tilesel < players[otherplayers[sel]].ownedStreets.size() && std::cin.good() && tilesel >=0){
                     tiles2.push_back(players[otherplayers[sel]].ownedStreets[tilesel]);
                 }
             }while(tilesel != 99);
@@ -1121,7 +1125,7 @@ bool trading_menue(player &p){
             <<"└────────┴────────┘\n"
             <<std::endl;
             std::cin>>desicion;
-        }while (desicion != 0 && desicion != 1);
+        }while (desicion != 0 && desicion != 1 && std::cin.good());
         if(!desicion){
             displayGameBoard();
             std::cout<<"They didn't want your offer! 😡"<<std::endl;
