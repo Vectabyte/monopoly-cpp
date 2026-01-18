@@ -1010,15 +1010,15 @@ bool trading_menue(player &p){
         std::vector<int>tiles2;
 
         displayGameBoard();
-        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR <<"You have " <<p.money<<"$ in your account.\n"
-        <<"How Much money do you want to give " << players[otherplayers[sel]].name << "?" <<std::endl;
+        std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR <<" You have " <<p.money<<"$ in your account.\n"
+        <<"How Much money do you want to give " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "?" <<std::endl;
         std::cin>>amount1;
 
         if(!p.ownedStreets.empty()){
             int tilesel;
             do{
                 displayGameBoard();
-                std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
+                std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << " here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : p.ownedStreets){
                     if(std::find(tiles1.begin(),tiles1.end(),t)==tiles1.end()){
@@ -1043,8 +1043,8 @@ bool trading_menue(player &p){
         }
 
         displayGameBoard();
-        std::cout<<colorCodes[players[otherplayers[sel]].color].first << p.symbol << " " << p.name << RESET_COLOR <<" has " <<p.money<<"$ in their account.\n"
-        <<"How Much money do you want from " << players[otherplayers[sel]].name << "?" <<std::endl;
+        std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR <<" has " <<players[otherplayers[sel]].money<<"$ in their account.\n"
+        <<"How Much money do you want from " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR  << "?" <<std::endl;
         std::cin>>amount2;
 
         displayGameBoard();
@@ -1052,7 +1052,7 @@ bool trading_menue(player &p){
             int tilesel;
             do{
                 displayGameBoard();
-                std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
+                std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR  << " here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : players[otherplayers[sel]].ownedStreets){
                     if(std::find(tiles2.begin(),tiles2.end(),t)==tiles2.end()){
@@ -1277,7 +1277,8 @@ int main(){
     //start of Gameloop :)
     int sel;
     do{
-        for(player &currentPlayer : players){
+        for( int index : turnOrder){
+            player &currentPlayer = players[index];
             if(currentPlayer.bankrupt){
                 continue;
             }
