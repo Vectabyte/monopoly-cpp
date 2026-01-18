@@ -795,7 +795,7 @@ bool financial_menue(player &p){
                         std::cout<< "99 | Finished in this menue" <<std::endl;
                         std::cout<<"Wich do you choose?"<<std::endl;
                         std::cin>>sel;
-                        if(sel !=99){
+                        if(sel !=99 && sel < filteredTileListPlayer.size() && std::cin.good()){
                             p.money += (0.5*filteredTileListPlayer[sel].buyPrice);
                             gameBoard[filteredTileListPlayer[sel].tileIndex].isMortgaged = true;
                             filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
@@ -835,7 +835,7 @@ bool financial_menue(player &p){
                         std::cout<< "99 | Finished in this menue" <<std::endl;
                         std::cout<<"Wich do you choose?"<<std::endl;
                         std::cin>>sel;
-                        if(sel !=99){
+                        if(sel !=99 && sel < filteredTileListPlayer.size() && std::cin.good()){
                             if (p.money < (0.55*filteredTileListPlayer[sel].buyPrice)){
                                 displayGameBoard();
                                 std::cout<<"Not enough Money. 😢"<<std::endl;
@@ -910,7 +910,7 @@ bool building_menue(player &p){
                             std::cout<< "99 | Finished in this menue" <<std::endl;
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
-                            if(sel !=99 && sel < filteredTileListPlayer.size()){
+                            if(sel !=99 && sel < filteredTileListPlayer.size() && std::cin.good()){
                                 if (p.money < gameBoard[filteredTileListPlayer[sel]].housePrice){
                                     displayGameBoard();
                                     std::cout<<"Not enough Money. 😢"<<std::endl;
@@ -964,7 +964,7 @@ bool building_menue(player &p){
                             std::cout<< "99 | Finished in this menue" <<std::endl;
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
-                            if(sel !=99 && sel < filteredTileListPlayer.size()){
+                            if(sel !=99 && sel < filteredTileListPlayer.size() && std::cin.good()){
                                 p.money += (0.5*gameBoard[filteredTileListPlayer[sel]].housePrice);
                                 gameBoard[filteredTileListPlayer[sel]].upgradeStage--;
                                 if(gameBoard[filteredTileListPlayer[sel]].upgradeStage == 0){
