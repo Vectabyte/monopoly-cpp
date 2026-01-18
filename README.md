@@ -12,3 +12,6 @@ A few small rulechanges where applied with limited impact on the gameplay.
 - when bankrupt, there is a menu to try to raise cash. Selling streets in this part is not implemented.
 - when bankrupted by the bank, the streets are returned to the bank and not immediatly auctioned of.
 - when bankrupted by a player, the player is not forced to immediatly pay 10% interest on the properties.
+
+cmake -S . -B build
+cmake --build build
