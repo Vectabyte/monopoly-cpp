@@ -16,11 +16,15 @@ A few small rulechanges where applied with limited impact on the gameplay.
 
 The project was build and tested on linux with the following compile command:
 
+```
 g++ monopoly.cpp -o monopoly --std=c++11
+```
 
 Furthermore CMake is available and tested with linux and the following compile commands:
 
+```
 cmake -S . -B build
 cmake --build build
+```
 
 Windows support is not available due to an utf-8 encoding issue with the player model.
