@@ -642,10 +642,10 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                     while(!correct){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR 
                         << " Turn! Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << " ?"<<std::endl;
-                        std::cout<<"------------------\n"
-                        <<"| 1: YES | "
-                        <<"0: NO |\n"
-                        <<"------------------\n"
+                        std::cout
+                        <<"┌────────┬────────┐\n"
+                        <<"│ 1: YES │ 0: NO  │\n"
+                        <<"└────────┴────────┘\n"
                         <<std::endl;
                         int sel;
                         std::cin>>sel;
@@ -700,23 +700,16 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
     if (p.jailFreeCard > 0) {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
         <<"What do you want to do? \n"
-        <<"----------------------------------------------------------------------------------------------------\n"
-        <<"| 1 = Roll the dices | "
-        <<"2 = Buy you out (50$) | "
-        <<"3 = Play a get out of jail card | "
-        <<"0 = End your turn | "
-        <<"77 = Quit the whole game early |\n"
-        <<"----------------------------------------------------------------------------------------------------"
+        <<"┌────────────────────┬───────────────────────┬─────────────────────────────────┬───────────────────┬────────────────────────────────┐\n"
+        <<"│ 1 = Roll the dices │ 2 = Buy you out (50$) │ 3 = Play a get out of jail card │ 0 = End your turn │ 77 = Quit the whole game early │\n"
+        <<"└────────────────────┴───────────────────────┴─────────────────────────────────┴───────────────────┴────────────────────────────────┘"
         <<std::endl;
     } else {
         std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
         <<"What do you want to do? \n"
-        <<"-------------------------------------------------------------------\n"
-        <<"| 1 = Roll the dices | "
-        <<"2 = Buy you out (50$) | "
-        <<"0 = End your turn | "
-        <<"77 = Quit the whole game early |\n"
-        <<"-------------------------------------------------------------------"
+        <<"┌────────────────────┬───────────────────────┬───────────────────┬────────────────────────────────┐\n"
+        <<"│ 1 = Roll the dices │ 2 = Buy you out (50$) │ 0 = End your turn │ 77 = Quit the whole game early │\n"
+        <<"└────────────────────┴───────────────────────┴───────────────────┴────────────────────────────────┘"
         <<std::endl;
     }
     std::cin>>sel;
@@ -810,11 +803,9 @@ bool financial_menue(player &p){
     std::vector<tile> filteredTileListPlayer;
     std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the financial menue\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
-    <<"--------------------------------------------------------------\n"
-    <<"| 1 = mortgage your cards | "
-    <<"2 = unmortgage your cards | "
-    <<"0 = go back |\n"
-    <<"--------------------------------------------------------------"
+    <<"┌─────────────────────────┬───────────────────────────┬─────────────┐\n"
+    <<"│ 1 = mortgage your cards │ 2 = unmortgage your cards │ 0 = go back │\n"
+    <<"└─────────────────────────┴───────────────────────────┴─────────────┘"
     <<std::endl;
     std::cin>>sel;
     switch (sel) {
@@ -914,11 +905,9 @@ bool building_menue(player &p){
     std::vector<int> filteredTileListPlayer;
     std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the building menue\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
-    <<"--------------------------------------------------------------\n"
-    <<"| 1 = buy houses | "
-    <<"2 = sell houses | "
-    <<"0 = go back |\n"
-    <<"--------------------------------------------------------------"
+    <<"┌────────────────┬─────────────────┬─────────────┐\n"
+    <<"│ 1 = buy houses │ 2 = sell houses │ 0 = go back │\n"
+    <<"└────────────────┴─────────────────┴─────────────┘"
     <<std::endl;
     std::cin>>sel;
     switch (sel) {
@@ -1036,17 +1025,15 @@ bool trading_menue(player &p){
     displayGameBoard();
     std::vector<tile> filteredTileListPlayer;
     std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << ", welcome to the traiding menue\n"
-    <<"Whit whom you want to trade?\n"
-    <<"--------------------------------------------------------------"<<std::endl;
+    <<"With whom you want to trade?\n"<<std::endl;
     int i = 0;
     for(player pl : players){
         if(pl.playerId != p.playerId){
             otherplayers.push_back(pl.playerId);
-            std::cout<<"| " << i << " | " << pl.name << " |\n";
+            std::cout<< i << " | " << pl.name << "\n";
         }
     }
-    std::cout<<"| 99 | go back |"
-    <<"\n--------------------------------------------------------------"
+    std::cout<<"99 | go back\n"
     <<std::endl;
     std::cin>>sel;
     if(sel < otherplayers.size()){
@@ -1067,7 +1054,7 @@ bool trading_menue(player &p){
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : p.ownedStreets){
-                    std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
+                    std::cout<<colorCodes[gameBoard[t].color].first << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
                     i++;
                 }
                 std::cout<< "99 | Finished in this menue" <<std::endl;
@@ -1085,7 +1072,7 @@ bool trading_menue(player &p){
         }
 
         displayGameBoard();
-        std::cout<<colorCodes[players[otherplayers[sel]].color].first << p.symbol << " " << p.name << RESET_COLOR <<"has " <<p.money<<"$ in their account.\n"
+        std::cout<<colorCodes[players[otherplayers[sel]].color].first << p.symbol << " " << p.name << RESET_COLOR <<" has " <<p.money<<"$ in their account.\n"
         <<"How Much money do you want from " << players[otherplayers[sel]].name << "?" <<std::endl;
         std::cin>>amount2;
 
@@ -1097,7 +1084,7 @@ bool trading_menue(player &p){
                 std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR << "here are the cards you can trade:" <<std::endl;
                 int i = 0;
                 for(int t : players[otherplayers[sel]].ownedStreets){
-                    std::cout<<colorCodes[gameBoard[t].color].first << "| " << i << " |" <<RESET_COLOR << " " << gameBoard[t].tileName << " |" <<std::endl;
+                    std::cout<<colorCodes[gameBoard[t].color].first << i << " | " << gameBoard[t].tileName << RESET_COLOR <<std::endl;
                     i++;
                 }
                 std::cout<< "99 | Finished in this menue" <<std::endl;
@@ -1117,10 +1104,9 @@ bool trading_menue(player &p){
         do{
             displayGameBoard();
             std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "do you accept the trade?\n"
-            <<"---------------------------------\n"
-            <<"| 1 = Yes | "
-            <<"0 = No |\n"
-            <<"---------------------------------"
+            <<"┌────────┬────────┐\n"
+            <<"│ 1: YES │ 0: NO  │\n"
+            <<"└────────┴────────┘\n"
             <<std::endl;
             std::cin>>desicion;
         }while (desicion != 0 && desicion != 1);
@@ -1221,14 +1207,9 @@ void bankruptcy(player &p, int targetID, int amount){
 bool normalaction(int &sel, player &p, int &diceRolls, bool &ok){
     std::cout<<colorCodes[p.color].first + p.symbol + " " + p.name + RESET_COLOR + ", it's your turn!\n"<<"You have " <<p.money<<"$ in your account.\n"
     <<"What do you want to do? \n"
-    <<"--------------------------------------------------------------------------------------------------------------------------------------------\n"
-    <<"| 1 = Roll the dices | "
-    <<"2 = Financial Menue | "
-    <<"3 = Building Menue | "
-    <<"4 = Trade with player |"
-    <<"0 = End your turn | "
-    <<"77 = Quit the whole game early |\n"
-    <<"--------------------------------------------------------------------------------------------------------------------------------------------"
+    <<"┌────────────────────┬─────────────────────┬────────────────────┬───────────────────────┬───────────────────┬────────────────────────────────┐\n"
+    <<"│ 1 = Roll the dices │ 2 = Financial Menue │ 3 = Building Menue │ 4 = Trade with player │ 0 = End your turn │ 77 = Quit the whole game early │\n"
+    <<"└────────────────────┴─────────────────────┴────────────────────┴───────────────────────┴───────────────────┴────────────────────────────────┘\n"
     <<std::endl;
     std::cin>>sel;
     switch (sel) { //Main action
