@@ -1,3 +1,5 @@
+#include "FileExport.hpp"
+#include "FileImport.hpp"
 #include <chrono>
 #include <iostream>
 #include <limits>
@@ -1299,11 +1301,22 @@ bool lastManStanding(){
 
 // Main function to initialize and run the Monopoly game loop
 int main(){
+    int sel;
     // Initialize Gameboard
-    gameBoard = initializeGameBoard();
+    std::cout<<"Do you want to load last saved game?\n"
+    <<"┌────────┬────────┐\n"
+    <<"│ 1: YES │ 0: NO  │\n"
+    <<"└────────┴────────┘\n"
+    <<std::endl;
+    std::cin>>sel;
+    if(sel == 1 && std::cin.good()){
+        //importFile();
+    }else{
+        gameBoard = initializeGameBoard();
+        players = initializePlayers();
+    }
     chanceCards = initializeChanceCards();
     communityCards = initializeCommunityCards();
-    players = initializePlayers();
 
     // Randomize turn order
     // create vector with player indices
@@ -1317,7 +1330,6 @@ int main(){
     displayGameBoard();
 
     //start of Gameloop :)
-    int sel;
     do{
         for( int index : turnOrder){
             player &currentPlayer = players[index];
@@ -1357,7 +1369,23 @@ int main(){
             }
         }
     } else {
-        std::cout << "Game ended early." << std::endl;
+        std::cout << "Game ended early.\n" 
+        <<"Do you want to export the game state?\n"
+        <<"┌────────┬────────┐\n"
+        <<"│ 1: YES │ 0: NO  │\n"
+        <<"└────────┴────────┘\n"
+        << std::endl;
+        std::cin>>sel;
+        if(sel == 1 && std::cin.good()){
+            //exportFile();
+            std::cout<<"Exited with saving"<<std::endl;
+
+        }else if(sel == 0 && std::cin.good()){
+            std::cout<<"Exited without saving"<<std::endl;
+        }else{
+            //exportFile()
+            std::cout<<"Saved you :)"<<std::endl;
+        }
     }
     return 0;
 }
