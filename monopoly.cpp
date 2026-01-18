@@ -7,11 +7,6 @@
 #include <vector>
 #include <array>
 #include <algorithm>
-
-#ifdef _WIN32
-#define NOMINMAX
-#include <windows.h>
-#endif
     
 // Color groups for properties
 enum ColorGroup {
@@ -1296,10 +1291,6 @@ bool lastManStanding(){
 
 // Main function to initialize and run the Monopoly game loop
 int main(){
-    #ifdef _WIN32
-        SetConsoleOutputCP(CP_UTF8);
-        SetConsoleCP(CP_UTF8);
-    #endif
     // Initialize Gameboard
     gameBoard = initializeGameBoard();
     chanceCards = initializeChanceCards();
