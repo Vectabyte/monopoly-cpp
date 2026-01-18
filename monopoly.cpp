@@ -833,6 +833,11 @@ bool financial_menue(player &p){
                         std::cout<<"Wich do you choose?"<<std::endl;
                         std::cin>>sel;
                         if(sel !=99){
+                            if (p.money < (0.55*filteredTileListPlayer[sel].buyPrice)){
+                                displayGameBoard();
+                                std::cout<<"Not enough Money. 😢"<<std::endl;
+                                continue;
+                            }
                             transferMoney(p, -1, (0.55*filteredTileListPlayer[sel].buyPrice));
                             gameBoard[filteredTileListPlayer[sel].tileIndex].isMortgaged = false;
                             filteredTileListPlayer.erase(filteredTileListPlayer.begin() + sel);
@@ -901,6 +906,11 @@ bool building_menue(player &p){
                             std::cout<<"Wich do you choose?"<<std::endl;
                             std::cin>>sel;
                             if(sel !=99 && sel < filteredTileListPlayer.size()){
+                                if (p.money < gameBoard[filteredTileListPlayer[sel]].housePrice){
+                                    displayGameBoard();
+                                    std::cout<<"Not enough Money. 😢"<<std::endl;
+                                    continue;
+                                }
                                 transferMoney(p, -1, gameBoard[filteredTileListPlayer[sel]].housePrice);
                                 gameBoard[filteredTileListPlayer[sel]].upgradeStage++;
                                 if(gameBoard[filteredTileListPlayer[sel]].upgradeStage == 5){
@@ -1012,7 +1022,15 @@ bool trading_menue(player &p){
         displayGameBoard();
         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR <<" You have " <<p.money<<"$ in your account.\n"
         <<"How Much money do you want to give " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "?" <<std::endl;
-        std::cin>>amount1;
+        while (true){
+            std::cin>>amount1;
+            if (amount1 <= p.money){
+                break;
+            }else{
+                std::cout<<"You don't have enough money! 😡"<<std::endl;
+                clearInputBuffer();
+            }
+        }
 
         if(!p.ownedStreets.empty()){
             int tilesel;
@@ -1045,7 +1063,15 @@ bool trading_menue(player &p){
         displayGameBoard();
         std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR <<" has " <<players[otherplayers[sel]].money<<"$ in their account.\n"
         <<"How Much money do you want from " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR  << "?" <<std::endl;
-        std::cin>>amount2;
+        while (true){
+            std::cin>>amount2;
+            if (amount2 <= players[otherplayers[sel]].money){
+                break;
+            }else{
+                std::cout<<"You don't have enough money! 😡"<<std::endl;
+                clearInputBuffer();
+            }
+        }
 
         displayGameBoard();
         if(!players[otherplayers[sel]].ownedStreets.empty()){
