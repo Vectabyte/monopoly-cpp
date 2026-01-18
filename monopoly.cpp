@@ -601,7 +601,8 @@ void movePlayer(int s, player &p, bool &ok, std::string message){
                     bool correct = false;
                     while(!correct){
                         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR 
-                        << " Turn! Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << " ?"<<std::endl;
+                        << " Turn! Do you want to buy " << currentfield.tileName << " for " << currentfield.buyPrice << "$?\n"
+                        << "You currently have " << p.money << "$ in your bank." << std::endl;
                         std::cout
                         <<"┌────────┬────────┐\n"
                         <<"│ 1: YES │ 0: NO  │\n"
