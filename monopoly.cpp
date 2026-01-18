@@ -1,5 +1,3 @@
-#include "FileExport.hpp"
-#include "FileImport.hpp"
 #include <chrono>
 #include <iostream>
 #include <limits>
@@ -9,10 +7,6 @@
 #include <vector>
 #include <array>
 #include <algorithm>
-#ifdef stringToColorGroup
-#error "stringToColorGroup is already defined as a macro!"
-#endif
-
     
 // Color groups for properties
 enum ColorGroup {
