@@ -757,7 +757,7 @@ bool jailedaction(int &sel, player &p, int &diceRolls, bool &ok){
         }
     }
 }
-
+//the whole function for the menue point financial menue with alle steps
 bool financial_menue(player &p){
     int sel;
     displayGameBoard();
@@ -771,12 +771,14 @@ bool financial_menue(player &p){
     std::cin>>sel;
     switch (sel) {
         case 1:{
+            //checks if player owns tiles and searches for all unmortaged cards that can be mortaged
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
                     if(!gameBoard[i].isMortgaged && gameBoard[i].upgradeStage == 0){
                         filteredTileListPlayer.push_back(gameBoard[i]);
                     }
                 }
+                //loop for selecting cards that should be mortaged
                 do{
                     displayGameBoard();
                     if(!filteredTileListPlayer.empty()){
@@ -809,12 +811,14 @@ bool financial_menue(player &p){
             break;
         }
         case 2:{
+            //checks if player owns tiles and searches for all mortaged cards
             if(p.ownedStreets.size()){
                 for(int i : p.ownedStreets){
                     if(gameBoard[i].isMortgaged){
                         filteredTileListPlayer.push_back(gameBoard[i]);
                     }
                 }
+                //loop for selecting cards that should be unmortaged
                 do{
                     displayGameBoard();
                     if(!filteredTileListPlayer.empty()){
@@ -864,7 +868,7 @@ bool financial_menue(player &p){
     }
     return false;
 }
-
+//the whole function for the menue point building menue with alle steps
 bool building_menue(player &p){
     int sel;
     displayGameBoard();
@@ -878,6 +882,7 @@ bool building_menue(player &p){
     std::cin>>sel;
     switch (sel) {
         case 1:{
+            //checks if the player ownes streets and checks if he has a monopoly and checks the upgrading status, then puts these tiles in a filtered list
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
@@ -886,6 +891,7 @@ bool building_menue(player &p){
                         }
                     }
                 }
+                //loop for the upgrading menue
                 if(!filteredTileListPlayer.empty()){
                     std::sort(filteredTileListPlayer.begin(),filteredTileListPlayer.end());
                     do{
@@ -930,6 +936,7 @@ bool building_menue(player &p){
             }
             break;
         }case 2:{
+            //checks if the player ownes streets and checks if he has a monopoly and checks the upgrading status, then puts these tiles in a filtered list
             if(!p.ownedStreets.empty()){
                 for(int i : p.ownedStreets){
                     if(ownsMonopoly(gameBoard[i])){
@@ -938,6 +945,7 @@ bool building_menue(player &p){
                         }
                     }
                 }
+                //loop tor the downgrading menue
                 if(!filteredTileListPlayer.empty()){
                     std::sort(filteredTileListPlayer.begin(),filteredTileListPlayer.end());
                     do{
@@ -989,7 +997,7 @@ bool building_menue(player &p){
     }
     return false;
 }
-
+//the whole function for the menue point traiding menue with alle steps
 bool trading_menue(player &p){
     int sel;
     std::vector<int> otherplayers;
@@ -1013,7 +1021,7 @@ bool trading_menue(player &p){
         int amount2;
         std::vector<int> tiles1;
         std::vector<int>tiles2;
-
+        //choosing the amount of money to give to selected player
         displayGameBoard();
         std::cout<<colorCodes[p.color].first << p.symbol << " " << p.name << RESET_COLOR <<" You have " <<p.money<<"$ in your account.\n"
         <<"How Much money do you want to give " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR << "?" <<std::endl;
@@ -1028,7 +1036,7 @@ bool trading_menue(player &p){
                 clearInputBuffer();
             }
         }
-
+        //displaying and choosing all possible tiles that can be traded from current player
         if(!p.ownedStreets.empty()){
             int tilesel;
             do{
@@ -1057,7 +1065,7 @@ bool trading_menue(player &p){
             std::cin.get();
             clearInputBuffer();
         }
-
+        //choosing the amount of money from selected player
         displayGameBoard();
         std::cout<<colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR <<" has " <<players[otherplayers[sel]].money<<"$ in their account.\n"
         <<"How Much money do you want from " << colorCodes[players[otherplayers[sel]].color].first << players[otherplayers[sel]].symbol << " " << players[otherplayers[sel]].name << RESET_COLOR  << "?" <<std::endl;
@@ -1072,7 +1080,7 @@ bool trading_menue(player &p){
                 clearInputBuffer();
             }
         }
-
+        //displaying and choosing all possible tiles that can be traded from selected player
         displayGameBoard();
         if(!players[otherplayers[sel]].ownedStreets.empty()){
             int tilesel;
@@ -1101,7 +1109,7 @@ bool trading_menue(player &p){
             std::cin.get();
             clearInputBuffer();
         }
-
+        //displays the trade offer and waits for a desicion
         int desicion;
         do{
             displayGameBoard();
