@@ -9,6 +9,10 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#ifdef stringToColorGroup
+#error "stringToColorGroup is already defined as a macro!"
+#endif
+
     
 // Color groups for properties
 enum ColorGroup {
@@ -68,6 +72,21 @@ const std::vector<std::pair<std::string, ColorGroup>> colorCodes = {
     {"\033[38;2;102;0;255m", PURPLE}
 };
 
+inline ColorGroup stringColorGroupMatcher(const std::string& colorStr) {
+    if (colorStr == "brown")      return ColorGroup::BROWN;
+    if (colorStr == "blue")       return ColorGroup::BLUE;
+    if (colorStr == "pink")       return ColorGroup::PINK;
+    if (colorStr == "orange")     return ColorGroup::ORANGE;
+    if (colorStr == "red")        return ColorGroup::RED;
+    if (colorStr == "yellow")     return ColorGroup::YELLOW;
+    if (colorStr == "green")      return ColorGroup::GREEN;
+    if (colorStr == "darkblue")   return ColorGroup::DARK_BLUE;
+    if (colorStr == "gray")       return ColorGroup::GRAY;
+    if (colorStr == "purple")     return ColorGroup::PURPLE;
+
+    return ColorGroup::NONE; // safer default
+}
+
 void clearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -91,6 +110,7 @@ std::vector<card> communityCards;
 std::vector<card> chanceCards;
 std::random_device rd;
 std::mt19937 gen(rd());
+int currentPlayerTurn = 0;
 int freeParkingFunds = 0;
 int communityCardCounter = 0;
 int chanceCardCounter = 0;
@@ -393,12 +413,7 @@ void transferMoney(player &from, int targetID, int amount){
     if (from.money < amount) {
         bankruptcy(from, targetID, amount);
     }
-    if (std::find_if(players.begin(), players.end(),[&from](player& pl) {
-        return &pl == &from;
-    }) != players.end())
-    {
-        from.money -= amount;
-    }
+    from.money -= amount;
     if (targetID == -1) {
         freeParkingFunds += amount;
         return;
@@ -1312,7 +1327,8 @@ int main(){
     <<std::endl;
     std::cin>>sel;
     if(sel == 1 && std::cin.good()){
-        //importFile();
+        importFile(gameBoard);
+        importFile(players);
     }else{
         gameBoard = initializeGameBoard();
         players = initializePlayers();
@@ -1328,41 +1344,49 @@ int main(){
     // shuffle the vector
     std::shuffle(turnOrder.begin(), turnOrder.end(), gen);
 
+    int index = 0;
+
+    if(sel == 1 && std::cin.good()){
+        importFile(freeParkingFunds, currentPlayerTurn, turnOrder);
+        index = currentPlayerTurn;
+    }
+
     //Display Gameboard
     displayGameBoard();
 
-    //start of Gameloop :)
-    do{
-        for( int index : turnOrder){
-            player &currentPlayer = players[index];
-            if(currentPlayer.bankrupt){
-                continue;
-            }
+    do {
+        player &currentPlayer = players[index];
+
+        // Skip bankrupt players
+        if (!currentPlayer.bankrupt) {
             bool control = false;
             bool rolled = false;
             int diceRolls = 0;
-            do{
-                if(!currentPlayer.jailed){
-                    control = normalaction(sel,currentPlayer,diceRolls,rolled);
-                    if(sel == 77){
-                        break;
-                    }else if(!control){
-                        sel = -1;
-                    }
-                }else{
-                    control = jailedaction(sel,currentPlayer,diceRolls,rolled);
-                    if(sel == 77){
-                        break;
-                    }else if(!control){
-                        sel = -1;
-                    }
+
+            do {
+                if (!currentPlayer.jailed) {
+                    control = normalaction(sel, currentPlayer, diceRolls, rolled);
+                    if (sel == 77) break;
+                    if (!control) sel = -1;
+                } else {
+                    control = jailedaction(sel, currentPlayer, diceRolls, rolled);
+                    if (sel == 77) break;
+                    if (!control) sel = -1;
                 }
-            }while(sel);
-            if(sel == 77){
-                break;
-            }
+            } while (sel);
         }
-    }while(sel != 77 && lastManStanding() == false);
+
+        // Check for save/exit
+        if (sel == 77) {
+            currentPlayerTurn = index; // save current player
+            break;
+        }
+
+        // Move to the next player, wrapping around
+        index = (index + 1) % turnOrder.size();
+
+    } while (sel != 77 && !lastManStanding());
+
 
     if (sel != 77 && lastManStanding()) {
         for (const auto& p : players) {
@@ -1379,13 +1403,17 @@ int main(){
         << std::endl;
         std::cin>>sel;
         if(sel == 1 && std::cin.good()){
-            //exportFile();
+            exportFile(players);
+            exportFile(gameBoard);
+            exportFile(freeParkingFunds, currentPlayerTurn, turnOrder);
             std::cout<<"Exited with saving"<<std::endl;
 
         }else if(sel == 0 && std::cin.good()){
             std::cout<<"Exited without saving"<<std::endl;
         }else{
-            //exportFile()
+            exportFile(players);
+            exportFile(gameBoard);
+            exportFile(freeParkingFunds, currentPlayerTurn, turnOrder);
             std::cout<<"Saved you :)"<<std::endl;
         }
     }
