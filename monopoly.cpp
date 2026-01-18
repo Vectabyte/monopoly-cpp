@@ -1054,6 +1054,7 @@ bool trading_menue(player &p){
                 if(tilesel !=99 && tilesel < p.ownedStreets.size() && std::cin.good() && tilesel >=0){
                     tiles1.push_back(p.ownedStreets[tilesel]);
                 }
+                clearInputBuffer();
             }while(tilesel != 99);
         }else{
             displayGameBoard();
@@ -1098,6 +1099,7 @@ bool trading_menue(player &p){
                 if(tilesel !=99 && tilesel < players[otherplayers[sel]].ownedStreets.size() && std::cin.good() && tilesel >=0){
                     tiles2.push_back(players[otherplayers[sel]].ownedStreets[tilesel]);
                 }
+                clearInputBuffer();
             }while(tilesel != 99);
         }else{
             std::cout<<players[otherplayers[sel]].name << " has no cards to give\n"<<"press enter to continue..."<<std::endl;
@@ -1125,7 +1127,7 @@ bool trading_menue(player &p){
             <<"└────────┴────────┘\n"
             <<std::endl;
             std::cin>>desicion;
-        }while (desicion != 0 && desicion != 1 && std::cin.good());
+        }while (true);
         if(!desicion){
             displayGameBoard();
             std::cout<<"They didn't want your offer! 😡"<<std::endl;
