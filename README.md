@@ -46,7 +46,7 @@ g++ monopoly.cpp -o monopoly --std=c++11
 
 ## How to Play
 
-Upon starting the game, you'll be prompted to input the number of players. After that, each player is assigned a name, symbol, and color. The turn order is randomized, and each player takes their turn.
+Upon starting the game you will either be prompted to load the last saved game or to set up players for a new game. Menu's can be navigated with their respective numbered entry. 
 
 ### Example Menu:
 
@@ -62,6 +62,7 @@ Here, entering "1" will load the last saved game, while entering "0" starts a ne
 ### Player Setup:
 
 Each player chooses a name, symbol, and color. The color will be used to highlight the player's position on the gameboard.
+This step is skipped, if loading a game from file.
 
 ### Turn Sequence:
 
@@ -71,7 +72,7 @@ Each player chooses a name, symbol, and color. The color will be used to highlig
 
 ## Load and Save
 
-* **Saving**: The game automatically saves when quitting, and there is a failsafe that ensures the game will save if invalid input is given.
+* **Saving**: The game automatically saves when quitting early, and there is a failsafe that ensures the game will save if invalid input is given.
 * **Loading**: You can load a previously saved game if all the necessary `.csv` files (like `Players.csv`, `Tiles.csv`, etc.) are located in the same folder.
 
 ## Deviations from the Original Base Game
