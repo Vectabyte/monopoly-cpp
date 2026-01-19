@@ -68,7 +68,7 @@ This step is skipped, if loading a game from file.
 
 1. The turn order is randomized.
 2. Each player takes their turn, and during the turn, they can perform various actions like moving, buying properties, or paying rent.
-3. The game continues in this way until a player wins or all players agree to quit.
+3. The game continues in this way until a player wins or the quit option is selected.
 
 ## Load and Save
 
