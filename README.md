@@ -1,35 +1,100 @@
-# monopoly-cpp
-The Repository for the C++ Project. Here we implement monopoly in a CLI Application.
-For the correct display of the gameboard it is recommended to use a monospace font.
+# Monopoly C++ (monopoly-cpp)
 
-## Deviations from the base game
+A command-line implementation of Monopoly in C++, designed to be played through a Text User Interface (TUI). This project is built for educational purposes and aims to simulate the classic board game with a custom set of features and rules.
 
-The game was implemented largely as originally designed.
-A few small rulechanges where applied with limited impact on the gameplay.
-- Cards referencing "move to nearest railroad" do not require you to pay double the rent price, calculation is based on normal rent calculation
-- Cards referencing "move to nearest utility" do not require you to pay 10x rolled die as rent price, calculation is based on normal rent calculation
-- when bankrupt, there is a menu to try to raise cash. Selling streets in this part is not implemented.
-- when bankrupted by the bank, the streets are returned to the bank and are not immediatly auctioned of.
-- when bankrupted by a player, the player is not forced to immediatly pay 10% interest on the properties.
+## Recommendations
+
+For optimal display of the gameboard, use a **monospace font**. Without a monospace font, the board might appear misaligned.
+
+## Compatibility
+
+This project was developed and tested on Linux. Due to hardware limitations, testing on macOS was not performed.
+
+### Windows Compatibility:
+Windows may encounter issues with UTF-8 characters in the console. While it may work depending on fonts and terminal settings, some symbols might not display correctly.
 
 ## Compile Instructions
 
-The project was build and tested on linux with the following compile command:
+To compile the game, follow these instructions:
 
-```
+### Using g++ (Linux):
+
+```bash
 g++ monopoly.cpp -o monopoly --std=c++11
 ```
 
-Furthermore CMake is available and tested with linux and the following compile commands:
+### Using CMake (Linux):
+
+1. Create a build directory:
+
+   ```bash
+   mkdir build
+   cd build
+   ```
+
+2. Run CMake:
+
+   ```bash
+   cmake ..
+   ```
+
+3. Build the project:
+
+   ```bash
+   cmake --build .
+   ```
+
+## How to Play
+
+Upon starting the game, you'll be prompted to input the number of players. After that, each player is assigned a name, symbol, and color. The turn order is randomized, and each player takes their turn.
+
+### Example Menu:
 
 ```
-cmake -S . -B build
-cmake --build build
+Do you want to load last saved game?
+┌────────┬────────┐
+│ 1: YES │ 0: NO  │
+└────────┴────────┘
 ```
 
-Windows support is not available due to an utf-8 encoding issue with the player model.
+Here, entering "1" will load the last saved game, while entering "0" starts a new game.
 
-## Missing features
+### Player Setup:
 
-There is no implementation for player vs bot since it is not easily feesible to implement with the broad decision needed to give any challange in this case.
-A pure random generator for doing actions and accessing menu's is not a good idea.
+Each player chooses a name, symbol, and color. The color will be used to highlight the player's position on the gameboard.
+
+### Turn Sequence:
+
+1. The turn order is randomized.
+2. Each player takes their turn, and during the turn, they can perform various actions like moving, buying properties, or paying rent.
+3. The game continues in this way until a player wins or all players agree to quit.
+
+## Load and Save
+
+* **Saving**: The game automatically saves when quitting, and there is a failsafe that ensures the game will save if invalid input is given.
+* **Loading**: You can load a previously saved game if all the necessary `.csv` files (like `Players.csv`, `Tiles.csv`, etc.) are located in the same folder.
+
+## Deviations from the Original Base Game
+
+While the game closely follows the rules of Monopoly, a few small deviations were implemented to enhance the gameplay experience:
+
+* **Railroad and Utility Cards**: In the original game, players are required to pay double the rent or 10x the rolled die amount when landing on certain cards. In this version, we calculate rent using the standard rules.
+* **Bankruptcy and Cash Raising**: When a player goes bankrupt, there is an option to try to raise cash, but selling properties to other players is not yet implemented.
+* **Free Parking**: When landing on the "Free Parking" space, players receive money accumulated in the parking. This is a **house rule** commonly used in Monopoly but is not part of the original rules.
+
+## Missing Features
+
+The following feature is not yet implemented:
+
+* **Player vs. Bot Mode**: AI-controlled bots are not available, as developing a competitive AI for Monopoly is complex. A purely random decision-making AI could lead to repetitive or boring gameplay.
+
+## Files
+
+The following files are part of the project:
+
+* **monopoly.cpp**: Contains the main game loop and logic for playing the game.
+* **FileImport.hpp**: Handles loading data from CSV files (e.g., game board, player data).
+* **FileExport.hpp**: Handles saving data to CSV files.
+* **player.hpp**: Defines the `player` struct and methods for player setup and actions.
+* **tile.hpp**: Defines the `tile` struct and methods for setting up the game board.
+* **card.hpp**: Defines the structures and functionality for Community and Chance cards.
