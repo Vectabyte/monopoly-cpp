@@ -1315,6 +1315,8 @@ int main(){
         std::cin>>sel;
     } else { sel = 0; }
 
+    std::cout << sel << std::endl;
+    std::cout << std::cin.fail() << std::endl;
     std::vector<std::size_t> turnOrder;
     int index;
     if(sel == 1 && std::cin.good()){
@@ -1322,10 +1324,10 @@ int main(){
         importFile(players);
         importFile(freeParkingFunds, index, turnOrder);
     }else{
-        if (std::cin.fail() || sel != 0) { 
+        if (std::cin.fail()) { 
             std::cout << "Invalid Input, continuing with normal setup!" << std::endl;
+            clearInputBuffer();
         }
-        clearInputBuffer();
         gameBoard = initializeGameBoard();
         players = initializePlayers();
         // Randomize turn order
