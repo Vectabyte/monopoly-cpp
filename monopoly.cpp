@@ -1315,8 +1315,6 @@ int main(){
         std::cin>>sel;
     } else { sel = 0; }
 
-    std::cout << sel << std::endl;
-    std::cout << std::cin.fail() << std::endl;
     std::vector<std::size_t> turnOrder;
     int index;
     if(sel == 1 && std::cin.good()){
